@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pesquisa Gral.ia — Gestão Acadêmica</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#1A56DB;--blue-l:#E8F0FE;--blue-d:#1343B0;
+  --green:#10B981;--green-l:#D1FAE5;--green-d:#065F46;
+  --red:#EF4444;--yellow:#F59E0B;--purple:#7C3AED;--purple-l:#EDE9FE;
+  --gray:#5F6368;--border:#DADCE0;
+  --bg:#F0EBE8;--surface:#FFF;--dark:#202124;
+}
+body{font-family:'Roboto',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;padding:0 0 60px}
+
+/* PROGRESS */
+.prog-bar{position:sticky;top:0;z-index:10;background:var(--surface);box-shadow:0 2px 4px rgba(0,0,0,0.06)}
+.prog-inner{max-width:680px;margin:0 auto;padding:10px 16px}
+.prog-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--gray);margin-bottom:6px}
+.prog-track{height:4px;background:#DADCE0;border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:var(--blue);border-radius:4px;transition:width .4s ease;width:0%}
+
+/* WRAP */
+.wrap{max-width:680px;margin:0 auto;padding:0 16px}
+
+/* BANNER */
+.banner{background:linear-gradient(135deg,#0F172A 0%,var(--blue-d) 55%,#2563EB 100%);border-radius:12px 12px 0 0;padding:32px 28px 28px;position:relative;overflow:hidden}
+.banner::before{content:'';position:absolute;top:-60px;right:-60px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,0.05)}
+.banner::after{content:'';position:absolute;bottom:-50px;left:40px;width:180px;height:180px;border-radius:50%;background:rgba(16,185,129,0.12)}
+.banner-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.13);border-radius:20px;padding:4px 12px;font-size:11px;color:rgba(255,255,255,0.9);font-weight:500;letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px}
+.tag-dot{width:7px;height:7px;background:var(--green);border-radius:50%}
+.banner h1{font-family:'Google Sans',sans-serif;font-size:24px;font-weight:600;color:#fff;margin-bottom:8px;line-height:1.25}
+.banner p{font-size:13px;color:rgba(255,255,255,0.72);line-height:1.6;max-width:520px}
+.banner-time{margin-top:16px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.1);border-radius:6px;padding:6px 12px;font-size:12px;color:rgba(255,255,255,0.8)}
+.banner-accent{height:4px;background:linear-gradient(90deg,var(--green),var(--blue))}
+
+/* SECTION */
+.sec-header{background:var(--surface);border-radius:12px;padding:16px 20px;margin:18px 0 8px;box-shadow:0 1px 3px rgba(0,0,0,0.07)}
+.sec-header.blue{border-left:4px solid var(--blue)}
+.sec-header.green{border-left:4px solid var(--green)}
+.sec-header.purple{border-left:4px solid var(--purple)}
+.sec-header.orange{border-left:4px solid var(--yellow)}
+.sec-num{font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:2px}
+.sec-header.blue .sec-num{color:var(--blue)}
+.sec-header.green .sec-num{color:var(--green)}
+.sec-header.purple .sec-num{color:var(--purple)}
+.sec-header.orange .sec-num{color:var(--yellow)}
+.sec-title{font-family:'Google Sans',sans-serif;font-size:15px;font-weight:600;color:var(--dark)}
+.sec-desc{font-size:12px;color:var(--gray);margin-top:2px}
+
+/* CARD */
+.q-card{background:var(--surface);border-radius:12px;padding:20px 22px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.07);border:1.5px solid transparent;transition:border-color .2s,box-shadow .2s}
+.q-card:focus-within{border-color:var(--blue);box-shadow:0 2px 8px rgba(26,86,219,0.1)}
+.q-card.hidden{display:none}
+.q-label{font-size:14px;font-weight:500;color:var(--dark);line-height:1.5;margin-bottom:14px}
+.req{color:var(--red);margin-left:2px}
+.q-note{font-size:11.5px;color:var(--gray);margin:-8px 0 12px;font-style:italic}
+.req-msg{font-size:11.5px;color:var(--red);margin-top:6px;display:none}
+.q-card.error .req-msg{display:block}
+.q-card.error{border-color:#FECACA}
+
+/* ROLE TAG */
+.role-tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px;margin-bottom:10px}
+.role-tag.professor{background:#FEF3C7;color:#92400E}
+.role-tag.aluno{background:var(--blue-l);color:var(--blue-d)}
+.role-tag.direcao{background:var(--purple-l);color:var(--purple)}
+.role-tag.bib{background:var(--green-l);color:var(--green-d)}
+.role-tag.todos{background:#F1F5F9;color:#475569}
+
+/* OPT */
+.opt-list{display:flex;flex-direction:column;gap:7px}
+.opt{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;transition:all .15s;user-select:none}
+.opt:hover{background:#F8F9FA;border-color:#B0BEC5}
+.opt input{width:18px;height:18px;accent-color:var(--blue);cursor:pointer;flex-shrink:0}
+.opt-text{font-size:13.5px;color:var(--dark)}
+.opt.checked{background:var(--blue-l);border-color:var(--blue)}
+.opt.checked .opt-text{color:var(--blue-d);font-weight:500}
+
+/* OTHER */
+.other-wrap{display:none;margin-top:5px;padding-left:29px}
+.other-wrap.show{display:block}
+.line-input{border:none;border-bottom:2px solid var(--border);outline:none;font-size:13.5px;color:var(--dark);padding:4px 0;width:100%;font-family:'Roboto',sans-serif;background:transparent;transition:border-color .2s}
+.line-input:focus{border-bottom-color:var(--blue)}
+.line-input::placeholder{color:#9AA0A6}
+
+/* SCALE */
+.scale-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--gray);margin-bottom:7px}
+.scale-btns{display:flex;gap:7px}
+.scale-btn{flex:1;height:44px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;color:var(--gray)}
+.scale-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-l)}
+.scale-btn.active{color:#fff;font-weight:600}
+.scale-btn[data-v="1"].active{background:#EF4444;border-color:#EF4444}
+.scale-btn[data-v="2"].active{background:#F97316;border-color:#F97316}
+.scale-btn[data-v="3"].active{background:#F59E0B;border-color:#F59E0B}
+.scale-btn[data-v="4"].active{background:#22C55E;border-color:#22C55E}
+.scale-btn[data-v="5"].active{background:#10B981;border-color:#10B981}
+
+/* TEXTAREA */
+.q-area{width:100%;border:none;border-bottom:2px solid var(--border);outline:none;resize:none;font-size:13.5px;font-family:'Roboto',sans-serif;color:var(--dark);padding:6px 0;line-height:1.6;background:transparent;transition:border-color .2s;min-height:76px}
+.q-area:focus{border-bottom-color:var(--blue)}
+.q-area::placeholder{color:#9AA0A6}
+.cc{font-size:11px;color:#9AA0A6;text-align:right;margin-top:3px}
+
+/* TEXT INPUT */
+.q-input{width:100%;border:none;border-bottom:2px solid var(--border);outline:none;font-size:13.5px;font-family:'Roboto',sans-serif;color:var(--dark);padding:6px 0;background:transparent;transition:border-color .2s}
+.q-input:focus{border-bottom-color:var(--blue)}
+.q-input::placeholder{color:#9AA0A6}
+
+/* SUBMIT */
+.submit-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:8px 0}
+.btn-send{background:var(--blue);color:#fff;border:none;padding:12px 30px;border-radius:8px;font-size:14px;font-family:'Google Sans',sans-serif;font-weight:500;cursor:pointer;transition:background .15s;display:flex;align-items:center;gap:8px}
+.btn-send:hover{background:var(--blue-d)}
+.btn-send:disabled{background:#9AA0A6;cursor:not-allowed}
+.btn-clear{background:none;border:none;color:var(--gray);font-size:13px;cursor:pointer;padding:8px}
+.btn-clear:hover{color:var(--dark)}
+.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* SUCCESS */
+.success{background:var(--surface);border-radius:12px;padding:48px 32px;text-align:center;margin-top:20px;box-shadow:0 1px 3px rgba(0,0,0,0.07);display:none}
+.success-icon{font-size:50px;margin-bottom:14px}
+.success-title{font-family:'Google Sans',sans-serif;font-size:21px;font-weight:600;color:var(--dark);margin-bottom:8px}
+.success-sub{font-size:13.5px;color:var(--gray);line-height:1.6}
+.success-badge{display:inline-block;background:var(--green-l);color:var(--green-d);padding:6px 16px;border-radius:20px;font-size:12px;font-weight:500;margin-top:14px}
+
+/* CONFIG */
+.cfg-banner{background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:12px;padding:14px 18px;margin:14px 0;font-size:12.5px;color:#78350F;line-height:1.7}
+.cfg-banner strong{color:#B45309}
+.cfg-banner code{background:#FEF3C7;padding:1px 5px;border-radius:4px;font-family:monospace;font-size:11.5px}
+.cfg-steps{list-style:none;margin:8px 0}
+.cfg-steps li{display:flex;gap:8px;margin:5px 0}
+.cfg-num{background:#F59E0B;color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px}
+.url-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.url-in{flex:1;min-width:180px;border:1.5px solid #FDE68A;border-radius:7px;padding:7px 11px;font-size:12px;font-family:monospace;outline:none;color:var(--dark);background:#fff}
+.url-in:focus{border-color:#F59E0B}
+.url-btn{background:#F59E0B;color:#fff;border:none;padding:7px 14px;border-radius:7px;font-size:12px;cursor:pointer;font-weight:500;white-space:nowrap}
+.url-btn:hover{background:#D97706}
+.url-st{font-size:11px;margin-top:5px}
+.url-st.ok{color:var(--green-d)}
+.url-st.err{color:var(--red)}
+
+.divider{height:1px;background:var(--border);margin:4px 0 14px}
+.footer{text-align:center;font-size:11px;color:#9AA0A6;margin-top:18px;padding-bottom:20px}
+
+@media(max-width:480px){
+  .scale-btns{gap:5px}
+  .scale-btn{font-size:13px;height:40px}
+  .banner{border-radius:0}
+  .wrap{padding:0 10px}
+}
+</style>
+</head>
+<body>
+
+<!-- PROGRESS -->
+<div class="prog-bar">
+  <div class="prog-inner">
+    <div class="prog-meta">
+      <span id="prog-label">Seção 1 de 4</span>
+      <span id="prog-pct">0%</span>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- BANNER -->
+  <div class="banner">
+    <div class="banner-tag"><div class="tag-dot"></div>Pesquisa de UX · Projeto Gral.ia</div>
+    <h1>Como é a sua rotina acadêmica hoje?</h1>
+    <p>Esta pesquisa faz parte do projeto <strong style="color:#fff">Gral.ia</strong>, uma plataforma de gestão acadêmica all-in-one. Suas respostas são <strong style="color:#fff">anônimas</strong> e vão ajudar a projetar uma solução mais humana para instituições de ensino.</p>
+    <div class="banner-time">⏱ Menos de 3 minutos</div>
+  </div>
+  <div class="banner-accent"></div>
+
+  <!-- CONFIG BANNER -->
+  <div class="cfg-banner" id="cfgBanner" style="display:none">
+    <strong>⚙️ Conecte ao Google Sheets para salvar respostas</strong>
+    <ul class="cfg-steps">
+      <li><div class="cfg-num">1</div><span>Crie uma planilha em <strong>sheets.google.com</strong></span></li>
+      <li><div class="cfg-num">2</div><span>Extensões → Apps Script → cole o arquivo <code>Gralia_AppsScript.js</code></span></li>
+      <li><div class="cfg-num">3</div><span>Implantar → Nova implantação → App da Web → Qualquer pessoa → Implantar</span></li>
+      <li><div class="cfg-num">4</div><span>Cole a URL gerada abaixo:</span></li>
+    </ul>
+    <div class="url-row">
+      <input class="url-in" type="url" id="sheetsUrl" placeholder="https://script.google.com/macros/s/.../exec">
+      <button class="url-btn" onclick="saveUrl()">Salvar URL</button>
+    </div>
+    <div class="url-st" id="urlSt"></div>
+  </div>
+
+  <form id="form" novalidate>
+
+    <!-- ══ SEÇÃO 1: PERFIL ══ -->
+    <div class="sec-header blue">
+      <div class="sec-num">Seção 1 de 4</div>
+      <div class="sec-title">Perfil do Participante</div>
+      <div class="sec-desc">Conte um pouco sobre você e sua instituição.</div>
+    </div>
+
+    <!-- Q1: PAPEL -->
+    <div class="q-card" id="q1">
+      <div class="q-label">1. Qual é o seu papel principal no ambiente educacional?<span class="req">*</span></div>
+      <div class="opt-list">
+        <label class="opt" onclick="selectRole('aluno',this)"><input type="radio" name="q1" value="aluno"><span class="opt-text">🎓 Aluno(a) / Estudante</span></label>
+        <label class="opt" onclick="selectRole('professor',this)"><input type="radio" name="q1" value="professor"><span class="opt-text">👨‍🏫 Professor(a) / Docente</span></label>
+        <label class="opt" onclick="selectRole('direcao',this)"><input type="radio" name="q1" value="direcao"><span class="opt-text">🏛️ Direção / Secretaria / Gestão</span></label>
+        <label class="opt" onclick="selectRole('bib',this)"><input type="radio" name="q1" value="bib"><span class="opt-text">📚 Bibliotecário(a) / Apoio Pedagógico</span></label>
+      </div>
+      <div class="req-msg">Por favor, selecione seu papel.</div>
+    </div>
+
+    <!-- Q2: NÍVEL -->
+    <div class="q-card" id="q2">
+      <div class="q-label">2. Qual é o nível de ensino da sua instituição?<span class="req">*</span></div>
+      <div class="opt-list">
+        <label class="opt" onclick="selectRadio('q2','tecnico',this)"><input type="radio" name="q2" value="tecnico"><span class="opt-text">Ensino Técnico / Profissionalizante (ex: CEDUP, SENAI, ETEC)</span></label>
+        <label class="opt" onclick="selectRadio('q2','superior',this)"><input type="radio" name="q2" value="superior"><span class="opt-text">Ensino Superior — Graduação</span></label>
+        <label class="opt" onclick="selectRadio('q2','pos',this)"><input type="radio" name="q2" value="pos"><span class="opt-text">Ensino Superior — Pós-graduação / Extensão</span></label>
+        <label class="opt" onclick="selectRadio('q2','medio',this)"><input type="radio" name="q2" value="medio"><span class="opt-text">Ensino Médio / Fundamental</span></label>
+        <label class="opt" onclick="selectRadio('q2','livre',this)"><input type="radio" name="q2" value="livre"><span class="opt-text">Cursos livres / Preparatórios / Outros</span></label>
+      </div>
+      <div class="req-msg">Por favor, selecione o nível de ensino.</div>
+    </div>
+
+    <!-- Q3: FREQUÊNCIA -->
+    <div class="q-card" id="q3">
+      <div class="q-label">3. Com que frequência você acessa sistemas ou plataformas da sua instituição?<span class="req">*</span></div>
+      <div class="opt-list">
+        <label class="opt" onclick="selectRadio('q3','diario',this)"><input type="radio" name="q3" value="diario"><span class="opt-text">Todos os dias</span></label>
+        <label class="opt" onclick="selectRadio('q3','semana',this)"><input type="radio" name="q3" value="semana"><span class="opt-text">Várias vezes por semana</span></label>
+        <label class="opt" onclick="selectRadio('q3','mes',this)"><input type="radio" name="q3" value="mes"><span class="opt-text">Poucas vezes no mês</span></label>
+        <label class="opt" onclick="selectRadio('q3','raro',this)"><input type="radio" name="q3" value="raro"><span class="opt-text">Raramente / Apenas em períodos específicos (provas, matrículas)</span></label>
+      </div>
+      <div class="req-msg">Por favor, selecione uma opção.</div>
+    </div>
+
+    <!-- ══ SEÇÃO 2: FERRAMENTAS ══ -->
+    <div class="sec-header green">
+      <div class="sec-num">Seção 2 de 4</div>
+      <div class="sec-title">Ferramentas Atuais</div>
+      <div class="sec-desc">Como você resolve suas tarefas acadêmicas hoje?</div>
+    </div>
+
+    <!-- Q4: FERRAMENTAS -->
+    <div class="q-card" id="q4">
+      <div class="q-label">4. Quais sistemas, plataformas ou canais você utiliza na sua rotina acadêmica?<span class="req">*</span></div>
+      <div class="q-note">Marque todas que se aplicam.</div>
+      <div class="opt-list">
+        <label class="opt" onclick="toggleCheck(this,'q4')"><input type="checkbox" name="q4" value="gov_oficial"><span class="opt-text">Sistemas oficiais do governo (ex: Estudante Online, SIGAA, SIGA, Q-Acadêmico)</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q4')"><input type="checkbox" name="q4" value="ava"><span class="opt-text">Ambientes Virtuais de Aprendizagem (ex: Moodle, Google Classroom, Canvas)</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q4')"><input type="checkbox" name="q4" value="erp"><span class="opt-text">ERPs educacionais (ex: UniMestre, TOTVS, SIE)</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q4')"><input type="checkbox" name="q4" value="msg"><span class="opt-text">Aplicativos de mensagem (ex: WhatsApp, Telegram)</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q4')"><input type="checkbox" name="q4" value="nuvem"><span class="opt-text">Google Drive / E-mail / Compartilhamento em nuvem</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q4')"><input type="checkbox" name="q4" value="papel"><span class="opt-text">Processos físicos / Papel / Atendimento presencial</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q4'); toggleOther('other4',this)">
+          <input type="checkbox" name="q4" value="outro"><span class="opt-text">Outro</span>
+        </label>
+      </div>
+      <div class="other-wrap" id="other4">
+        <input class="line-input" type="text" name="q4_outro" placeholder="Qual plataforma ou sistema?">
+      </div>
+      <div class="req-msg">Selecione ao menos uma opção.</div>
+    </div>
+
+    <!-- Q5: SATISFAÇÃO -->
+    <div class="q-card" id="q5">
+      <div class="q-label">5. Em uma escala de 1 a 5, quão satisfeito(a) você está com a usabilidade e organização dessas ferramentas?<span class="req">*</span></div>
+      <div class="scale-labels"><span>😤 Muito Insatisfeito</span><span>😊 Muito Satisfeito</span></div>
+      <div class="scale-btns" id="scale5">
+        <button type="button" class="scale-btn" data-v="1" onclick="setScale(1,this)">1</button>
+        <button type="button" class="scale-btn" data-v="2" onclick="setScale(2,this)">2</button>
+        <button type="button" class="scale-btn" data-v="3" onclick="setScale(3,this)">3</button>
+        <button type="button" class="scale-btn" data-v="4" onclick="setScale(4,this)">4</button>
+        <button type="button" class="scale-btn" data-v="5" onclick="setScale(5,this)">5</button>
+      </div>
+      <input type="hidden" name="q5" id="q5_val">
+      <div class="req-msg">Selecione um valor.</div>
+    </div>
+
+    <!-- ══ SEÇÃO 3: DORES (CONDICIONAIS) ══ -->
+    <div class="sec-header purple">
+      <div class="sec-num">Seção 3 de 4</div>
+      <div class="sec-title">Dores e Dificuldades</div>
+      <div class="sec-desc" id="sec3-desc">Conte sobre os maiores desafios na sua rotina.</div>
+    </div>
+
+    <!-- Q6: FRUSTRAÇÃO GERAL (todos) -->
+    <div class="q-card" id="q6">
+      <div class="role-tag todos">Para todos</div>
+      <div class="q-label">6. Qual é a sua maior frustração com os sistemas acadêmicos que utiliza hoje?<span class="req">*</span></div>
+      <textarea class="q-area" name="q6" id="q6_txt" rows="3" maxlength="600" placeholder="Ex: As informações ficam espalhadas em vários lugares, nunca sei onde encontrar o que preciso..." oninput="updateCC('q6_txt','cc6')"></textarea>
+      <div class="cc"><span id="cc6">0</span>/600</div>
+      <div class="req-msg">Por favor, descreva sua principal frustração.</div>
+    </div>
+
+    <!-- Q7A: ALUNO -->
+    <div class="q-card hidden" id="q7a">
+      <div class="role-tag aluno">Para Alunos</div>
+      <div class="q-label">7. Quando você precisa consultar notas, faltas, avisos ou encontrar um material que o professor postou, qual é a maior complicação que você enfrenta?</div>
+      <div class="q-note">Opcional — mas sua resposta enriquece muito a pesquisa.</div>
+      <textarea class="q-area" name="q7a" id="q7a_txt" rows="3" maxlength="600" placeholder="Ex: O professor manda o PDF no WhatsApp e a mensagem se perde entre outras, ou não consigo ver minha frequência em tempo real..." oninput="updateCC('q7a_txt','cc7a')"></textarea>
+      <div class="cc"><span id="cc7a">0</span>/600</div>
+    </div>
+
+    <!-- Q7B: PROFESSOR -->
+    <div class="q-card hidden" id="q7b">
+      <div class="role-tag professor">Para Professores</div>
+      <div class="q-label">7. Como funciona hoje sua rotina para registrar chamadas, lançar notas, publicar materiais e reservar espaços (laboratórios, salas)? Qual é o maior gargalo?</div>
+      <div class="q-note">Opcional — mas sua resposta enriquece muito a pesquisa.</div>
+      <textarea class="q-area" name="q7b" id="q7b_txt" rows="3" maxlength="600" placeholder="Ex: A chamada é feita em papel, depois passo pro sistema. Laboratórios são reservados anotando em um caderno na secretaria e conflito de horário é frequente..." oninput="updateCC('q7b_txt','cc7b')"></textarea>
+      <div class="cc"><span id="cc7b">0</span>/600</div>
+    </div>
+
+    <!-- Q7C: DIREÇÃO -->
+    <div class="q-card hidden" id="q7c">
+      <div class="role-tag direcao">Para Direção / Gestão</div>
+      <div class="q-label">7. Quais são os maiores desafios operacionais no seu dia a dia? Como você lida com matrículas, controle de espaços físicos e comunicação com professores e alunos?</div>
+      <div class="q-note">Opcional — mas sua resposta enriquece muito a pesquisa.</div>
+      <textarea class="q-area" name="q7c" id="q7c_txt" rows="3" maxlength="600" placeholder="Ex: Não tenho uma visão consolidada de quais salas estão ocupadas, as matrículas dependem de muita troca de e-mail e papel..." oninput="updateCC('q7c_txt','cc7c')"></textarea>
+      <div class="cc"><span id="cc7c">0</span>/600</div>
+    </div>
+
+    <!-- Q7D: BIBLIOTECÁRIO -->
+    <div class="q-card hidden" id="q7d">
+      <div class="role-tag bib">Para Bibliotecários</div>
+      <div class="q-label">7. Como você controla hoje os empréstimos, devoluções e o acervo? Qual é o maior problema do processo atual?</div>
+      <div class="q-note">Opcional — mas sua resposta enriquece muito a pesquisa.</div>
+      <textarea class="q-area" name="q7d" id="q7d_txt" rows="3" maxlength="600" placeholder="Ex: Controlo em planilhas ou cadernos, o aluno não consegue consultar o acervo online, multas são calculadas manualmente..." oninput="updateCC('q7d_txt','cc7d')"></textarea>
+      <div class="cc"><span id="cc7d">0</span>/600</div>
+    </div>
+
+    <!-- Q8: O QUE GOSTA (todos) -->
+    <div class="q-card" id="q8">
+      <div class="role-tag todos">Para todos</div>
+      <div class="q-label">8. Existe algo que você <strong>gosta</strong> nos sistemas que usa atualmente e gostaria que fosse mantido numa nova plataforma?</div>
+      <div class="q-note">Opcional — ajuda a entender o que funciona bem.</div>
+      <textarea class="q-area" name="q8" id="q8_txt" rows="3" maxlength="600" placeholder="Ex: Gosto da integração com o Google Drive no Classroom, é muito prático anexar arquivos..." oninput="updateCC('q8_txt','cc8')"></textarea>
+      <div class="cc"><span id="cc8">0</span>/600</div>
+    </div>
+
+    <!-- ══ SEÇÃO 4: OPORTUNIDADES ══ -->
+    <div class="sec-header orange">
+      <div class="sec-num">Seção 4 de 4</div>
+      <div class="sec-title">Oportunidades e o Gral.ia</div>
+      <div class="sec-desc">Ajude a definir o que construir primeiro.</div>
+    </div>
+
+    <!-- Q9: FUNCIONALIDADES -->
+    <div class="q-card" id="q9">
+      <div class="q-label">9. O Gral.ia propõe centralizar a gestão acadêmica em uma só plataforma. Quais funcionalidades seriam <strong>MAIS ÚTEIS</strong> para você?<span class="req">*</span></div>
+      <div class="q-note">Escolha até 3 opções.</div>
+      <div class="opt-list">
+        <label class="opt" onclick="toggleCheck(this,'q9',3)"><input type="checkbox" name="q9" value="painel"><span class="opt-text">📊 Painel único com quadro de horários, notas e frequência em tempo real</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q9',3)"><input type="checkbox" name="q9" value="materiais"><span class="opt-text">📂 Central de materiais de apoio (PDFs / slides) organizada por disciplina</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q9',3)"><input type="checkbox" name="q9" value="reservas"><span class="opt-text">🏫 Reserva inteligente de laboratórios, salas e equipamentos (com detecção de conflito)</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q9',3)"><input type="checkbox" name="q9" value="biblioteca"><span class="opt-text">📚 Módulo de biblioteca — consulta de acervo, empréstimos e alertas de multa</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q9',3)"><input type="checkbox" name="q9" value="avisos"><span class="opt-text">📢 Mural oficial de avisos e notificações da instituição</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q9',3)"><input type="checkbox" name="q9" value="mobile"><span class="opt-text">📱 Interface 100% otimizada para celular</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q9',3)"><input type="checkbox" name="q9" value="diario"><span class="opt-text">📝 Diário de classe digital — chamada e notas pelo celular em tempo real</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q9',3)"><input type="checkbox" name="q9" value="matricula"><span class="opt-text">🎓 Acompanhamento de matrícula e pendências documentais</span></label>
+      </div>
+      <div class="req-msg">Selecione ao menos uma e no máximo 3 opções.</div>
+    </div>
+
+    <!-- Q10: SUGESTÃO LIVRE -->
+    <div class="q-card" id="q10">
+      <div class="q-label">10. Se você pudesse resolver <strong>um único problema</strong> na sua rotina acadêmica usando tecnologia, qual seria?</div>
+      <div class="q-note">Opcional — toda sugestão é muito bem-vinda.</div>
+      <textarea class="q-area" name="q10" id="q10_txt" rows="3" maxlength="600" placeholder="Ex: Queria poder ver em tempo real se o laboratório que preciso está livre, sem ter que ir até a secretaria..." oninput="updateCC('q10_txt','cc10')"></textarea>
+      <div class="cc"><span id="cc10">0</span>/600</div>
+    </div>
+
+    <!-- Q11: PLATAFORMAS CONHECIDAS -->
+    <div class="q-card" id="q11">
+      <div class="q-label">11. Você já utilizou alguma das plataformas abaixo em outras escolas ou instituições?</div>
+      <div class="q-note">Opcional — marque as que conhece e descreva outras no campo abaixo.</div>
+      <div class="opt-list">
+        <label class="opt" onclick="toggleCheck(this,'q11')"><input type="checkbox" name="q11" value="moodle"><span class="opt-text">Moodle</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q11')"><input type="checkbox" name="q11" value="classroom"><span class="opt-text">Google Classroom</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q11')"><input type="checkbox" name="q11" value="sigaa"><span class="opt-text">SIGAA</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q11')"><input type="checkbox" name="q11" value="siga"><span class="opt-text">SIGA (UDESC / FATEC)</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q11')"><input type="checkbox" name="q11" value="canvas"><span class="opt-text">Canvas LMS</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q11')"><input type="checkbox" name="q11" value="teams"><span class="opt-text">Microsoft Teams for Education</span></label>
+        <label class="opt" onclick="toggleCheck(this,'q11')"><input type="checkbox" name="q11" value="nenhuma"><span class="opt-text">Nenhuma das acima</span></label>
+      </div>
+      <!-- CAMPO ABERTO PARA OUTRAS PLATAFORMAS -->
+      <div style="margin-top:12px">
+        <div class="q-note" style="margin:0 0 6px">Utilizou outra(s) plataforma(s) não listada(s) acima? Descreva:</div>
+        <input class="q-input" type="text" name="q11_outras" placeholder="Ex: Pergamum, SophiA, UniMestre, Blackboard...">
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="submit-row">
+      <button type="button" class="btn-clear" onclick="clearForm()">Limpar respostas</button>
+      <button type="button" class="btn-send" id="btnSend" onclick="submitForm()">
+        <span id="btnTxt">Enviar respostas</span>
+        <div class="spin" id="spin"></div>
+        <span>→</span>
+      </button>
+    </div>
+
+  </form>
+
+  <!-- SUCCESS -->
+  <div class="success" id="success">
+    <div class="success-icon">🐦</div>
+    <div class="success-title">Obrigado pela contribuição!</div>
+    <div class="success-sub">Suas respostas foram registradas com sucesso e farão parte da pesquisa de UX do Projeto Gral.ia. Juntos estamos construindo uma plataforma mais humana para a educação.</div>
+    <div class="success-badge">✓ Resposta salva no Google Sheets</div>
+  </div>
+
+  <div class="footer">
+    Gral.ia · Pesquisa de UX · Prototipagem UI/UX 2025<br>
+    Pesquisa anônima — nenhum dado pessoal é coletado.
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+// ── CONFIG ─────────────────────────────────────────
+let SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxU826hCwyIeIhSdA2LyXYJKM7a1shinTzljlDG3N5kCvPvxWnlDBThRKIBwQ8O2fk/exec';
+
+function saveUrl() {
+  const url = document.getElementById('sheetsUrl').value.trim();
+  const st  = document.getElementById('urlSt');
+  if(!url.startsWith('https://script.google.com')) {
+    st.className = 'url-st err';
+    st.textContent = '✗ URL inválida — deve começar com https://script.google.com';
+    return;
+  }
+  SHEETS_URL = url;
+  // URL já fixada no código
+  st.className = 'url-st ok';
+  st.textContent = '✓ URL salva! Respostas serão enviadas ao Google Sheets.';
+  const b = document.getElementById('cfgBanner');
+  b.style.borderColor = '#A7F3D0';
+  b.style.background  = '#ECFDF5';
+  b.querySelector('strong').style.color = '#065F46';
+}
+
+window.addEventListener('load', () => {
+  if(SHEETS_URL) {
+    document.getElementById('sheetsUrl').value = SHEETS_URL;
+    const st = document.getElementById('urlSt');
+    st.className = 'url-st ok';
+    st.textContent = '✓ URL configurada.';
+    const b = document.getElementById('cfgBanner');
+    b.style.borderColor = '#A7F3D0';
+    b.style.background  = '#ECFDF5';
+  }
+  updateProgress();
+});
+
+// ── STATE ──────────────────────────────────────────
+const st = {
+  role: null,
+  q2: null, q3: null,
+  q4: [], q9: [], q11: [],
+  q5: null,
+};
+
+const ROLE_COLORS = { aluno:'blue', professor:'#F59E0B', direcao:'purple', bib:'green' };
+
+// ── ROLE SELECT (condicional) ──────────────────────
+function selectRole(role, el) {
+  document.getElementById('q1').querySelectorAll('.opt').forEach(o => o.classList.remove('checked'));
+  el.classList.add('checked');
+  el.querySelector('input').checked = true;
+  st.role = role;
+  document.getElementById('q1').classList.remove('error');
+
+  // Oculta todos os cards condicionais
+  ['q7a','q7b','q7c','q7d'].forEach(id => document.getElementById(id).classList.add('hidden'));
+
+  // Mostra o card correspondente ao perfil
+  const map = { aluno:'q7a', professor:'q7b', direcao:'q7c', bib:'q7d' };
+  document.getElementById(map[role]).classList.remove('hidden');
+
+  // Atualiza descrição da seção 3
+  const descs = {
+    aluno:    'Perguntas sobre sua experiência como estudante.',
+    professor:'Perguntas sobre sua rotina docente e administrativa.',
+    direcao:  'Perguntas sobre gestão institucional e operacional.',
+    bib:      'Perguntas sobre o funcionamento da biblioteca e acervo.',
+  };
+  document.getElementById('sec3-desc').textContent = descs[role];
+  updateProgress();
+}
+
+// ── RADIO GENÉRICO ─────────────────────────────────
+function selectRadio(name, val, el) {
+  document.getElementById(name).querySelectorAll('.opt').forEach(o => o.classList.remove('checked'));
+  el.classList.add('checked');
+  el.querySelector('input').checked = true;
+  st[name] = val;
+  document.getElementById(name).classList.remove('error');
+  updateProgress();
+}
+
+// ── CHECKBOX ───────────────────────────────────────
+function toggleCheck(el, name, max) {
+  const input = el.querySelector('input');
+  const on    = el.classList.contains('checked');
+  if(!on) {
+    if(max) {
+      const count = document.querySelectorAll(`[name="${name}"]:checked`).length;
+      if(count >= max) {
+        el.style.borderColor = '#EF4444';
+        setTimeout(() => el.style.borderColor = '', 700);
+        return;
+      }
+    }
+    el.classList.add('checked');
+    input.checked = true;
+    if(Array.isArray(st[name]) && !st[name].includes(input.value)) st[name].push(input.value);
+  } else {
+    el.classList.remove('checked');
+    input.checked = false;
+    if(Array.isArray(st[name])) st[name] = st[name].filter(v => v !== input.value);
+  }
+  document.getElementById(name)?.classList.remove('error');
+  updateProgress();
+}
+
+function toggleOther(id, el) {
+  const w = document.getElementById(id);
+  if(w) {
+    w.classList.toggle('show', el.classList.contains('checked'));
+    if(el.classList.contains('checked')) w.querySelector('input')?.focus();
+  }
+}
+
+// ── SCALE ──────────────────────────────────────────
+function setScale(val, btn) {
+  document.querySelectorAll('#scale5 .scale-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('q5_val').value = val;
+  st.q5 = val;
+  document.getElementById('q5').classList.remove('error');
+  updateProgress();
+}
+
+// ── CHAR COUNT ─────────────────────────────────────
+function updateCC(txtId, ccId) {
+  const len = document.getElementById(txtId)?.value.length || 0;
+  document.getElementById(ccId).textContent = len;
+  const name = txtId.split('_')[0];
+  if(len > 0) document.getElementById(name)?.classList.remove('error');
+  updateProgress();
+}
+
+// ── PROGRESS ───────────────────────────────────────
+function updateProgress() {
+  let done = 0;
+  if(st.role)          done++;
+  if(st.q2)            done++;
+  if(st.q3)            done++;
+  if(st.q4.length > 0) done++;
+  if(st.q5)            done++;
+  if(document.getElementById('q6_txt')?.value?.trim()) done++;
+  if(st.q9.length > 0) done++;
+  const pct = Math.round((done / 7) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-pct').textContent  = pct + '%';
+  let sec = 1;
+  if(st.role && st.q2 && st.q3) sec = 2;
+  if(st.q4.length && st.q5)     sec = 3;
+  if(document.getElementById('q6_txt')?.value?.trim()) sec = 4;
+  document.getElementById('prog-label').textContent = `Seção ${sec} de 4`;
+}
+
+// ── VALIDAÇÃO ──────────────────────────────────────
+function validate() {
+  let ok = true;
+  const checks = [
+    { id:'q1', test: () => !!st.role },
+    { id:'q2', test: () => !!st.q2 },
+    { id:'q3', test: () => !!st.q3 },
+    { id:'q4', test: () => st.q4.length > 0 },
+    { id:'q5', test: () => !!document.getElementById('q5_val')?.value },
+    { id:'q6', test: () => document.getElementById('q6_txt')?.value?.trim().length > 0 },
+    { id:'q9', test: () => st.q9.length > 0 },
+  ];
+  checks.forEach(c => {
+    const card = document.getElementById(c.id);
+    if(!c.test()) { card?.classList.add('error'); ok = false; }
+    else           { card?.classList.remove('error'); }
+  });
+  if(!ok) document.querySelector('.q-card.error')?.scrollIntoView({ behavior:'smooth', block:'center' });
+  return ok;
+}
+
+// ── ENVIO ──────────────────────────────────────────
+async function submitForm() {
+  if(!validate()) return;
+  const btn  = document.getElementById('btnSend');
+  const spin = document.getElementById('spin');
+  const txt  = document.getElementById('btnTxt');
+  btn.disabled = true;
+  spin.style.display = 'block';
+  txt.textContent = 'Enviando...';
+
+  const payload = {
+    timestamp:          new Date().toISOString(),
+    perfil:             st.role,
+    nivel_ensino:       st.q2,
+    frequencia:         st.q3,
+    ferramentas:        st.q4,
+    ferramentas_outro:  document.querySelector('[name=q4_outro]')?.value || '',
+    satisfacao:         document.getElementById('q5_val')?.value || '',
+    frustracao_geral:   document.getElementById('q6_txt')?.value || '',
+    resp_aluno:         document.getElementById('q7a_txt')?.value || '',
+    resp_professor:     document.getElementById('q7b_txt')?.value || '',
+    resp_direcao:       document.getElementById('q7c_txt')?.value || '',
+    resp_bib:           document.getElementById('q7d_txt')?.value || '',
+    pontos_positivos:   document.getElementById('q8_txt')?.value || '',
+    funcionalidades:    st.q9,
+    sugestao:           document.getElementById('q10_txt')?.value || '',
+    plataformas:        st.q11,
+    plataformas_outras: document.querySelector('[name=q11_outras]')?.value || '',
+  };
+
+  console.log('Gral.ia — payload:', payload);
+
+  if(SHEETS_URL) {
+    try {
+      await fetch(SHEETS_URL, {
+        method:'POST', mode:'no-cors',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload),
+      });
+    } catch(e) { console.warn('fetch error (no-cors normal):', e); }
+  }
+  showSuccess();
+}
+
+function showSuccess() {
+  document.getElementById('form').style.display = 'none';
+  document.getElementById('cfgBanner').style.display = 'none';
+  const s = document.getElementById('success');
+  s.style.display = 'block';
+  if(!SHEETS_URL) {
+    s.querySelector('.success-badge').textContent = '⚠ Configure a URL do Sheets para salvar respostas';
+    s.querySelector('.success-badge').style.background = '#FEF3C7';
+    s.querySelector('.success-badge').style.color = '#92400E';
+  }
+  s.scrollIntoView({ behavior:'smooth' });
+  document.getElementById('prog-fill').style.width = '100%';
+  document.getElementById('prog-pct').textContent  = '100%';
+  document.getElementById('prog-label').textContent = 'Concluído!';
+}
+
+// ── LIMPAR ─────────────────────────────────────────
+function clearForm() {
+  if(!confirm('Limpar todas as respostas?')) return;
+  document.getElementById('form').reset();
+  document.querySelectorAll('.opt').forEach(o => o.classList.remove('checked'));
+  document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.q-card').forEach(c => c.classList.remove('error'));
+  document.querySelectorAll('.other-wrap').forEach(w => w.classList.remove('show'));
+  document.querySelectorAll('.cc span').forEach(s => s.textContent = '0');
+  ['q7a','q7b','q7c','q7d'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  Object.assign(st, { role:null, q2:null, q3:null, q4:[], q9:[], q11:[], q5:null });
+  document.getElementById('q5_val').value = '';
+  document.getElementById('btnSend').disabled = false;
+  document.getElementById('spin').style.display = 'none';
+  document.getElementById('btnTxt').textContent = 'Enviar respostas';
+  updateProgress();
+}
+</script>
+</body>
+</html>
