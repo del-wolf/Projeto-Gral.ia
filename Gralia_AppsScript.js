@@ -4,7 +4,10 @@
 const SPREADSHEET_ID = '1BdVwL6gfQVytVNyr6lkGCDxQ11pv36A5HbwKlpL235Y';
 const SHEET_NAME = 'Respostas';
 const FORM_VERSION = '2.0';
-const MAX_BODY_BYTES = 20000;
+// Sem limite editorial de texto; respeita a capacidade de uma célula do Sheets.
+const MAX_CELL_CHARS = 50000;
+// Comporta os nove campos de texto, inclusive caracteres escapados no JSON.
+const MAX_BODY_BYTES = 3000000;
 const HEADERS = [
   'Timestamp', 'Perfil', 'Frequência de uso', 'Ferramentas usadas',
   'Ferramentas — Outro', 'Satisfação (1-5)', 'Frustração geral',
@@ -165,10 +168,14 @@ function validatePayload_(raw) {
   data.satisfacao = raw.satisfacao;
   textFields.forEach(key => {
     const value = raw[key] === undefined ? '' : raw[key];
-    if (typeof value !== 'string' || value.length > 600 || /\u0000/.test(value)) {
-      fail_('INVALID_PAYLOAD', 'Texto inválido ou acima de 600 caracteres: ' + key);
+    if (typeof value !== 'string' || /\u0000/.test(value)) {
+      fail_('INVALID_PAYLOAD', 'Texto inválido: ' + key);
     }
     data[key] = value.trim();
+    // Valida o conteúdo que será escrito, incluindo o escape contra fórmulas.
+    if (safeCell_(data[key]).length > MAX_CELL_CHARS) {
+      fail_('TEXT_TOO_LONG', 'Texto acima da capacidade de uma célula da planilha: ' + key);
+    }
   });
   if (!data.frustracao_geral) fail_('INVALID_PAYLOAD', 'Preencha a principal frustração.');
   if (data.ferramentas.includes('outro') !== Boolean(data.ferramentas_outro)) {
