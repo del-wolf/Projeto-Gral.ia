@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pesquisa Gral.ia — Gestão Acadêmica</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#1A56DB;--blue-l:#E8F0FE;--blue-d:#1343B0;
+  --green:#10B981;--green-l:#D1FAE5;--green-d:#065F46;
+  --red:#EF4444;--yellow:#F59E0B;--purple:#7C3AED;--purple-l:#EDE9FE;
+  --gray:#5F6368;--border:#DADCE0;
+  --bg:#F0EBE8;--surface:#FFF;--dark:#202124;
+}
+body{font-family:'Roboto',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh;padding:0 0 60px}
+
+/* PROGRESS */
+.prog-bar{position:sticky;top:0;z-index:10;background:var(--surface);box-shadow:0 2px 4px rgba(0,0,0,0.06)}
+.prog-inner{max-width:680px;margin:0 auto;padding:10px 16px}
+.prog-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--gray);margin-bottom:6px}
+.prog-track{height:4px;background:#DADCE0;border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:var(--blue);border-radius:4px;transition:width .4s ease;width:0%}
+
+/* WRAP */
+.wrap{max-width:680px;margin:0 auto;padding:0 16px}
+
+/* BANNER */
+.banner{background:linear-gradient(135deg,#0F172A 0%,var(--blue-d) 55%,#2563EB 100%);border-radius:12px 12px 0 0;padding:32px 28px 28px;position:relative;overflow:hidden}
+.banner::before{content:'';position:absolute;top:-60px;right:-60px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,0.05)}
+.banner::after{content:'';position:absolute;bottom:-50px;left:40px;width:180px;height:180px;border-radius:50%;background:rgba(16,185,129,0.12)}
+.banner-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.13);border-radius:20px;padding:4px 12px;font-size:11px;color:rgba(255,255,255,0.9);font-weight:500;letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px}
+.tag-dot{width:7px;height:7px;background:var(--green);border-radius:50%}
+.banner h1{font-family:'Google Sans',sans-serif;font-size:24px;font-weight:600;color:#fff;margin-bottom:8px;line-height:1.25}
+.banner p{font-size:13px;color:rgba(255,255,255,0.72);line-height:1.6;max-width:520px}
+.banner-time{margin-top:16px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.1);border-radius:6px;padding:6px 12px;font-size:12px;color:rgba(255,255,255,0.8)}
+.banner-accent{height:4px;background:linear-gradient(90deg,var(--green),var(--blue))}
+
+/* SECTION */
+.sec-header{background:var(--surface);border-radius:12px;padding:16px 20px;margin:18px 0 8px;box-shadow:0 1px 3px rgba(0,0,0,0.07)}
+.sec-header.blue{border-left:4px solid var(--blue)}
+.sec-header.green{border-left:4px solid var(--green)}
+.sec-header.purple{border-left:4px solid var(--purple)}
+.sec-header.orange{border-left:4px solid var(--yellow)}
+.sec-num{font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:2px}
+.sec-header.blue .sec-num{color:var(--blue)}
+.sec-header.green .sec-num{color:var(--green)}
+.sec-header.purple .sec-num{color:var(--purple)}
+.sec-header.orange .sec-num{color:var(--yellow)}
+.sec-title{font-family:'Google Sans',sans-serif;font-size:15px;font-weight:600;color:var(--dark)}
+.sec-desc{font-size:12px;color:var(--gray);margin-top:2px}
+
+/* CARD */
+.q-card{background:var(--surface);border-radius:12px;padding:20px 22px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.07);border:1.5px solid transparent;transition:border-color .2s,box-shadow .2s}
+.q-card:focus-within{border-color:var(--blue);box-shadow:0 2px 8px rgba(26,86,219,0.1)}
+.q-card.hidden{display:none}
+.q-label{font-size:14px;font-weight:500;color:var(--dark);line-height:1.5;margin-bottom:14px}
+.req{color:var(--red);margin-left:2px}
+.q-note{font-size:11.5px;color:var(--gray);margin:-8px 0 12px;font-style:italic}
+.req-msg{font-size:11.5px;color:var(--red);margin-top:6px;display:none}
+.q-card.error .req-msg{display:block}
+.q-card.error{border-color:#FECACA}
+
+/* ROLE TAG */
+.role-tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px;margin-bottom:10px}
+.role-tag.professor{background:#FEF3C7;color:#92400E}
+.role-tag.aluno{background:var(--blue-l);color:var(--blue-d)}
+.role-tag.direcao{background:var(--purple-l);color:var(--purple)}
+.role-tag.bib{background:var(--green-l);color:var(--green-d)}
+.role-tag.todos{background:#F1F5F9;color:#475569}
+
+/* OPT */
+.opt-list{display:flex;flex-direction:column;gap:7px}
+.opt{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;transition:all .15s;user-select:none}
+.opt:hover{background:#F8F9FA;border-color:#B0BEC5}
+.opt input{width:18px;height:18px;accent-color:var(--blue);cursor:pointer;flex-shrink:0}
+.opt-text{font-size:13.5px;color:var(--dark)}
+.opt.checked{background:var(--blue-l);border-color:var(--blue)}
+.opt.checked .opt-text{color:var(--blue-d);font-weight:500}
+
+/* OTHER */
+.other-wrap{display:none;margin-top:5px;padding-left:29px}
+.other-wrap.show{display:block}
+.line-input{border:none;border-bottom:2px solid var(--border);outline:none;font-size:13.5px;color:var(--dark);padding:4px 0;width:100%;font-family:'Roboto',sans-serif;background:transparent;transition:border-color .2s}
+.line-input:focus{border-bottom-color:var(--blue)}
+.line-input::placeholder{color:#9AA0A6}
+
+/* SCALE */
+.scale-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--gray);margin-bottom:7px}
+.scale-btns{display:flex;gap:7px}
+.scale-btn{flex:1;height:44px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;color:var(--gray)}
+.scale-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-l)}
+.scale-btn.active{color:#fff;font-weight:600}
+.scale-btn[data-v="1"].active{background:#EF4444;border-color:#EF4444}
+.scale-btn[data-v="2"].active{background:#F97316;border-color:#F97316}
+.scale-btn[data-v="3"].active{background:#F59E0B;border-color:#F59E0B}
+.scale-btn[data-v="4"].active{background:#22C55E;border-color:#22C55E}
+.scale-btn[data-v="5"].active{background:#10B981;border-color:#10B981}
+
+/* TEXTAREA */
+.q-area{width:100%;border:none;border-bottom:2px solid var(--border);outline:none;resize:none;font-size:13.5px;font-family:'Roboto',sans-serif;color:var(--dark);padding:6px 0;line-height:1.6;background:transparent;transition:border-color .2s;min-height:76px}
+.q-area:focus{border-bottom-color:var(--blue)}
+.q-area::placeholder{color:#9AA0A6}
+.cc{font-size:11px;color:#9AA0A6;text-align:right;margin-top:3px}
+
+/* TEXT INPUT */
+.q-input{width:100%;border:none;border-bottom:2px solid var(--border);outline:none;font-size:13.5px;font-family:'Roboto',sans-serif;color:var(--dark);padding:6px 0;background:transparent;transition:border-color .2s}
+.q-input:focus{border-bottom-color:var(--blue)}
+.q-input::placeholder{color:#9AA0A6}
+
+/* SUBMIT */
+.submit-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:8px 0}
+.btn-send{background:var(--blue);color:#fff;border:none;padding:12px 30px;border-radius:8px;font-size:14px;font-family:'Google Sans',sans-serif;font-weight:500;cursor:pointer;transition:background .15s;display:flex;align-items:center;gap:8px}
+.btn-send:hover{background:var(--blue-d)}
+.btn-send:disabled{background:#9AA0A6;cursor:not-allowed}
+.btn-clear{background:none;border:none;color:var(--gray);font-size:13px;cursor:pointer;padding:8px}
+.btn-clear:hover{color:var(--dark)}
+.spin{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* SUCCESS */
+.success{background:var(--surface);border-radius:12px;padding:48px 32px;text-align:center;margin-top:20px;box-shadow:0 1px 3px rgba(0,0,0,0.07);display:none}
+.success-icon{font-size:50px;margin-bottom:14px}
+.success-title{font-family:'Google Sans',sans-serif;font-size:21px;font-weight:600;color:var(--dark);margin-bottom:8px}
+.success-sub{font-size:13.5px;color:var(--gray);line-height:1.6}
+.success-badge{display:inline-block;background:var(--green-l);color:var(--green-d);padding:6px 16px;border-radius:20px;font-size:12px;font-weight:500;margin-top:14px}
+
+/* STATUS / ACESSIBILIDADE */
+.submit-status{font-size:13px;line-height:1.6;padding:12px 14px;margin:8px 0;border-radius:8px;background:var(--blue-l);color:var(--blue-d)}
+.submit-status.status-error{background:#FEF2F2;color:#991B1B}
+.receipt{font-size:11px;color:var(--gray);margin-top:12px;overflow-wrap:anywhere}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.opt:has(input:disabled){cursor:default}
+button:disabled{cursor:not-allowed}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}.spin{animation:none}}
+
+.divider{height:1px;background:var(--border);margin:4px 0 14px}
+.footer{text-align:center;font-size:11px;color:#9AA0A6;margin-top:18px;padding-bottom:20px}
+
+@media(max-width:480px){
+  .scale-btns{gap:5px}
+  .scale-btn{font-size:13px;height:40px}
+  .banner{border-radius:0}
+  .wrap{padding:0 10px}
+}
+</style>
+</head>
+<body>
+
+<!-- PROGRESS -->
+<div class="prog-bar">
+  <div class="prog-inner">
+    <div class="prog-meta">
+      <span id="prog-label">Perguntas obrigatórias respondidas</span>
+      <span id="prog-pct">0%</span>
+    </div>
+    <div class="prog-track" id="prog-track" role="progressbar" aria-label="Perguntas obrigatórias respondidas" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="prog-fill" id="prog-fill"></div></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- BANNER -->
+  <div class="banner">
+    <div class="banner-tag"><div class="tag-dot"></div>Pesquisa de UX · Projeto Gral.ia</div>
+    <h1>Como é a sua rotina acadêmica hoje?</h1>
+    <p>Esta pesquisa faz parte do projeto <strong style="color:#fff">Gral.ia</strong>, uma plataforma de gestão acadêmica all-in-one. Sua participação é voluntária e vai ajudar a projetar uma solução mais humana para instituições de ensino. Não solicitamos nome ou e-mail. Evite incluir dados pessoais ou identificar outras pessoas nos campos abertos.</p>
+    <div class="banner-time">⏱ Menos de 3 minutos</div>
+  </div>
+  <div class="banner-accent"></div>
+
+  <noscript><div class="submit-status status-error">Ative o JavaScript para responder a esta pesquisa.</div></noscript>
+  <form id="form" novalidate>
+
+    <!-- ══ SEÇÃO 1: PERFIL ══ -->
+    <div class="sec-header blue">
+      <div class="sec-num">Seção 1 de 4</div>
+      <div class="sec-title">Perfil do Participante</div>
+      <div class="sec-desc">Conte um pouco sobre você e sua instituição.</div>
+    </div>
+
+    <!-- Q1: PAPEL -->
+    <div class="q-card" id="q1">
+      <div class="q-label">1. Qual é o seu papel principal no ambiente educacional?<span class="req">*</span></div>
+      <div class="opt-list">
+        <label class="opt"><input type="radio" name="q1" value="aluno"><span class="opt-text">🎓 Aluno(a) / Estudante</span></label>
+        <label class="opt"><input type="radio" name="q1" value="professor"><span class="opt-text">👨‍🏫 Professor(a) / Docente</span></label>
+        <label class="opt"><input type="radio" name="q1" value="direcao"><span class="opt-text">🏛️ Direção / Secretaria / Gestão</span></label>
+        <label class="opt"><input type="radio" name="q1" value="bib"><span class="opt-text">📚 Bibliotecário(a) / Apoio Pedagógico</span></label>
+      </div>
+      <div class="req-msg">Por favor, selecione seu papel.</div>
+    </div>
+
+    <!-- Q2: NÍVEL -->
+    <div class="q-card" id="q2">
+      <div class="q-label">2. Qual é o nível de ensino da sua instituição?<span class="req">*</span></div>
+      <div class="opt-list">
+        <label class="opt"><input type="radio" name="q2" value="tecnico"><span class="opt-text">Ensino Técnico / Profissionalizante (ex: CEDUP, SENAI, ETEC)</span></label>
+        <label class="opt"><input type="radio" name="q2" value="superior"><span class="opt-text">Ensino Superior — Graduação</span></label>
+        <label class="opt"><input type="radio" name="q2" value="pos"><span class="opt-text">Ensino Superior — Pós-graduação / Extensão</span></label>
+        <label class="opt"><input type="radio" name="q2" value="medio"><span class="opt-text">Ensino Médio / Fundamental</span></label>
+        <label class="opt"><input type="radio" name="q2" value="livre"><span class="opt-text">Cursos livres / Preparatórios / Outros</span></label>
+      </div>
+      <div class="req-msg">Por favor, selecione o nível de ensino.</div>
+    </div>
+
+    <!-- Q3: FREQUÊNCIA -->
+    <div class="q-card" id="q3">
+      <div class="q-label">3. Com que frequência você acessa sistemas ou plataformas da sua instituição?<span class="req">*</span></div>
+      <div class="opt-list">
+        <label class="opt"><input type="radio" name="q3" value="diario"><span class="opt-text">Todos os dias</span></label>
+        <label class="opt"><input type="radio" name="q3" value="semana"><span class="opt-text">Várias vezes por semana</span></label>
+        <label class="opt"><input type="radio" name="q3" value="mes"><span class="opt-text">Poucas vezes no mês</span></label>
+        <label class="opt"><input type="radio" name="q3" value="raro"><span class="opt-text">Raramente / Apenas em períodos específicos (provas, matrículas)</span></label>
+      </div>
+      <div class="req-msg">Por favor, selecione uma opção.</div>
+    </div>
+
+    <!-- ══ SEÇÃO 2: FERRAMENTAS ══ -->
+    <div class="sec-header green">
+      <div class="sec-num">Seção 2 de 4</div>
+      <div class="sec-title">Ferramentas Atuais</div>
+      <div class="sec-desc">Como você resolve suas tarefas acadêmicas hoje?</div>
+    </div>
+
+    <!-- Q4: FERRAMENTAS -->
+    <div class="q-card" id="q4">
+      <div class="q-label">4. Quais sistemas, plataformas ou canais você utiliza na sua rotina acadêmica?<span class="req">*</span></div>
+      <div class="q-note">Marque todas que se aplicam.</div>
+      <div class="opt-list">
+        <label class="opt"><input type="checkbox" name="q4" value="gov_oficial"><span class="opt-text">Sistemas oficiais do governo (ex: Estudante Online, SIGAA, SIGA, Q-Acadêmico)</span></label>
+        <label class="opt"><input type="checkbox" name="q4" value="ava"><span class="opt-text">Ambientes Virtuais de Aprendizagem (ex: Moodle, Google Classroom, Canvas)</span></label>
+        <label class="opt"><input type="checkbox" name="q4" value="erp"><span class="opt-text">ERPs educacionais (ex: UniMestre, TOTVS, SIE)</span></label>
+        <label class="opt"><input type="checkbox" name="q4" value="msg"><span class="opt-text">Aplicativos de mensagem (ex: WhatsApp, Telegram)</span></label>
+        <label class="opt"><input type="checkbox" name="q4" value="nuvem"><span class="opt-text">Google Drive / E-mail / Compartilhamento em nuvem</span></label>
+        <label class="opt"><input type="checkbox" name="q4" value="papel"><span class="opt-text">Processos físicos / Papel / Atendimento presencial</span></label>
+        <label class="opt">
+          <input type="checkbox" name="q4" value="outro"><span class="opt-text">Outro</span>
+        </label>
+      </div>
+      <div class="other-wrap" id="other4">
+        <input class="line-input" type="text" name="q4_outro" maxlength="600" aria-label="Outra ferramenta utilizada" placeholder="Qual plataforma ou sistema?">
+      </div>
+      <div class="req-msg">Selecione ao menos uma opção e, se marcar Outro, descreva a ferramenta.</div>
+    </div>
+
+    <!-- Q5: SATISFAÇÃO -->
+    <div class="q-card" id="q5">
+      <div class="q-label">5. Em uma escala de 1 a 5, quão satisfeito(a) você está com a usabilidade e organização dessas ferramentas?<span class="req">*</span></div>
+      <div class="scale-labels"><span>😤 Muito Insatisfeito</span><span>😊 Muito Satisfeito</span></div>
+      <div class="scale-btns" id="scale5">
+        <button type="button" class="scale-btn" data-v="1">1</button>
+        <button type="button" class="scale-btn" data-v="2">2</button>
+        <button type="button" class="scale-btn" data-v="3">3</button>
+        <button type="button" class="scale-btn" data-v="4">4</button>
+        <button type="button" class="scale-btn" data-v="5">5</button>
+      </div>
+      <input type="hidden" name="q5" id="q5_val">
+      <div class="req-msg">Selecione um valor.</div>
+    </div>
+
+    <!-- ══ SEÇÃO 3: DORES (CONDICIONAIS) ══ -->
+    <div class="sec-header purple">
+      <div class="sec-num">Seção 3 de 4</div>
+      <div class="sec-title">Dores e Dificuldades</div>
+      <div class="sec-desc" id="sec3-desc">Conte sobre os maiores desafios na sua rotina.</div>
+    </div>
+
+    <!-- Q6: FRUSTRAÇÃO GERAL (todos) -->
+    <div class="q-card" id="q6">
+      <div class="role-tag todos">Para todos</div>
+      <div class="q-label">6. Qual é a sua maior frustração com os sistemas acadêmicos que utiliza hoje?<span class="req">*</span></div>
+      <textarea class="q-area" name="q6" id="q6_txt" rows="3" maxlength="600" placeholder="Ex: As informações ficam espalhadas em vários lugares, nunca sei onde encontrar o que preciso..."></textarea>
+      <div class="cc"><span id="cc6">0</span>/600</div>
+      <div class="req-msg">Por favor, descreva sua principal frustração.</div>
+    </div>
+
+    <!-- Q7A: ALUNO -->
+    <div class="q-card hidden" id="q7a">
+      <div class="role-tag aluno">Para Alunos</div>
+      <div class="q-label">7. Quando você precisa consultar notas, faltas, avisos ou encontrar um material que o professor postou, qual é a maior complicação que você enfrenta?</div>
+      <div class="q-note">Opcional — mas sua resposta enriquece muito a pesquisa.</div>
+      <textarea class="q-area" name="q7a" id="q7a_txt" rows="3" maxlength="600" placeholder="Ex: O professor manda o PDF no WhatsApp e a mensagem se perde entre outras, ou não consigo ver minha frequência em tempo real..."></textarea>
+      <div class="cc"><span id="cc7a">0</span>/600</div>
+    </div>
+
+    <!-- Q7B: PROFESSOR -->
+    <div class="q-card hidden" id="q7b">
+      <div class="role-tag professor">Para Professores</div>
+      <div class="q-label">7. Como funciona hoje sua rotina para registrar chamadas, lançar notas, publicar materiais e reservar espaços (laboratórios, salas)? Qual é o maior gargalo?</div>
+      <div class="q-note">Opcional — mas sua resposta enriquece muito a pesquisa.</div>
+      <textarea class="q-area" name="q7b" id="q7b_txt" rows="3" maxlength="600" placeholder="Ex: A chamada é feita em papel, depois passo pro sistema. Laboratórios são reservados anotando em um caderno na secretaria e conflito de horário é frequente..."></textarea>
+      <div class="cc"><span id="cc7b">0</span>/600</div>
+    </div>
+
+    <!-- Q7C: DIREÇÃO -->
+    <div class="q-card hidden" id="q7c">
+      <div class="role-tag direcao">Para Direção / Gestão</div>
+      <div class="q-label">7. Quais são os maiores desafios operacionais no seu dia a dia? Como você lida com matrículas, controle de espaços físicos e comunicação com professores e alunos?</div>
+      <div class="q-note">Opcional — mas sua resposta enriquece muito a pesquisa.</div>
+      <textarea class="q-area" name="q7c" id="q7c_txt" rows="3" maxlength="600" placeholder="Ex: Não tenho uma visão consolidada de quais salas estão ocupadas, as matrículas dependem de muita troca de e-mail e papel..."></textarea>
+      <div class="cc"><span id="cc7c">0</span>/600</div>
+    </div>
+
+    <!-- Q7D: BIBLIOTECÁRIO -->
+    <div class="q-card hidden" id="q7d">
+      <div class="role-tag bib">Para Bibliotecários</div>
+      <div class="q-label">7. Como você controla hoje os empréstimos, devoluções e o acervo? Qual é o maior problema do processo atual?</div>
+      <div class="q-note">Opcional — mas sua resposta enriquece muito a pesquisa.</div>
+      <textarea class="q-area" name="q7d" id="q7d_txt" rows="3" maxlength="600" placeholder="Ex: Controlo em planilhas ou cadernos, o aluno não consegue consultar o acervo online, multas são calculadas manualmente..."></textarea>
+      <div class="cc"><span id="cc7d">0</span>/600</div>
+    </div>
+
+    <!-- Q8: O QUE GOSTA (todos) -->
+    <div class="q-card" id="q8">
+      <div class="role-tag todos">Para todos</div>
+      <div class="q-label">8. Existe algo que você <strong>gosta</strong> nos sistemas que usa atualmente e gostaria que fosse mantido numa nova plataforma?</div>
+      <div class="q-note">Opcional — ajuda a entender o que funciona bem.</div>
+      <textarea class="q-area" name="q8" id="q8_txt" rows="3" maxlength="600" placeholder="Ex: Gosto da integração com o Google Drive no Classroom, é muito prático anexar arquivos..."></textarea>
+      <div class="cc"><span id="cc8">0</span>/600</div>
+    </div>
+
+    <!-- ══ SEÇÃO 4: OPORTUNIDADES ══ -->
+    <div class="sec-header orange">
+      <div class="sec-num">Seção 4 de 4</div>
+      <div class="sec-title">Oportunidades e o Gral.ia</div>
+      <div class="sec-desc">Ajude a definir o que construir primeiro.</div>
+    </div>
+
+    <!-- Q9: FUNCIONALIDADES -->
+    <div class="q-card" id="q9">
+      <div class="q-label">9. O Gral.ia propõe centralizar a gestão acadêmica em uma só plataforma. Quais funcionalidades seriam <strong>MAIS ÚTEIS</strong> para você?<span class="req">*</span></div>
+      <div class="q-note">Escolha até 3 opções.</div>
+      <div class="opt-list">
+        <label class="opt"><input type="checkbox" name="q9" value="painel"><span class="opt-text">📊 Painel único com quadro de horários, notas e frequência em tempo real</span></label>
+        <label class="opt"><input type="checkbox" name="q9" value="materiais"><span class="opt-text">📂 Central de materiais de apoio (PDFs / slides) organizada por disciplina</span></label>
+        <label class="opt"><input type="checkbox" name="q9" value="reservas"><span class="opt-text">🏫 Reserva inteligente de laboratórios, salas e equipamentos (com detecção de conflito)</span></label>
+        <label class="opt"><input type="checkbox" name="q9" value="biblioteca"><span class="opt-text">📚 Módulo de biblioteca — consulta de acervo, empréstimos e alertas de multa</span></label>
+        <label class="opt"><input type="checkbox" name="q9" value="avisos"><span class="opt-text">📢 Mural oficial de avisos e notificações da instituição</span></label>
+        <label class="opt"><input type="checkbox" name="q9" value="mobile"><span class="opt-text">📱 Interface 100% otimizada para celular</span></label>
+        <label class="opt"><input type="checkbox" name="q9" value="diario"><span class="opt-text">📝 Diário de classe digital — chamada e notas pelo celular em tempo real</span></label>
+        <label class="opt"><input type="checkbox" name="q9" value="matricula"><span class="opt-text">🎓 Acompanhamento de matrícula e pendências documentais</span></label>
+      </div>
+      <div class="req-msg">Selecione ao menos uma e no máximo 3 opções.</div>
+    </div>
+
+    <!-- Q10: SUGESTÃO LIVRE -->
+    <div class="q-card" id="q10">
+      <div class="q-label">10. Se você pudesse resolver <strong>um único problema</strong> na sua rotina acadêmica usando tecnologia, qual seria?</div>
+      <div class="q-note">Opcional — toda sugestão é muito bem-vinda.</div>
+      <textarea class="q-area" name="q10" id="q10_txt" rows="3" maxlength="600" placeholder="Ex: Queria poder ver em tempo real se o laboratório que preciso está livre, sem ter que ir até a secretaria..."></textarea>
+      <div class="cc"><span id="cc10">0</span>/600</div>
+    </div>
+
+    <!-- Q11: PLATAFORMAS CONHECIDAS -->
+    <div class="q-card" id="q11">
+      <div class="q-label">11. Você já utilizou alguma das plataformas abaixo em outras escolas ou instituições?</div>
+      <div class="q-note">Opcional — marque as que conhece e descreva outras no campo abaixo.</div>
+      <div class="opt-list">
+        <label class="opt"><input type="checkbox" name="q11" value="moodle"><span class="opt-text">Moodle</span></label>
+        <label class="opt"><input type="checkbox" name="q11" value="classroom"><span class="opt-text">Google Classroom</span></label>
+        <label class="opt"><input type="checkbox" name="q11" value="sigaa"><span class="opt-text">SIGAA</span></label>
+        <label class="opt"><input type="checkbox" name="q11" value="siga"><span class="opt-text">SIGA (UDESC / FATEC)</span></label>
+        <label class="opt"><input type="checkbox" name="q11" value="canvas"><span class="opt-text">Canvas LMS</span></label>
+        <label class="opt"><input type="checkbox" name="q11" value="teams"><span class="opt-text">Microsoft Teams for Education</span></label>
+        <label class="opt"><input type="checkbox" name="q11" value="nenhuma"><span class="opt-text">Nenhuma das acima</span></label>
+      </div>
+      <!-- CAMPO ABERTO PARA OUTRAS PLATAFORMAS -->
+      <div style="margin-top:12px">
+        <div class="q-note" style="margin:0 0 6px">Utilizou outra(s) plataforma(s) não listada(s) acima? Descreva:</div>
+        <input class="q-input" type="text" name="q11_outras" maxlength="600" aria-label="Outras plataformas conhecidas" placeholder="Ex: Pergamum, SophiA, UniMestre, Blackboard...">
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div id="submitStatus" class="submit-status" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+    <div class="submit-row">
+      <button type="button" class="btn-clear" id="btnClear">Limpar respostas</button>
+      <button type="submit" class="btn-send" id="btnSend">
+        <span id="btnTxt">Enviar respostas</span>
+        <div class="spin" id="spin"></div>
+        <span>→</span>
+      </button>
+    </div>
+
+  </form>
+
+  <!-- SUCCESS -->
+  <div class="success" id="success" tabindex="-1" role="status" aria-live="polite">
+    <div class="success-icon">🐦</div>
+    <div class="success-title">Obrigado pela contribuição!</div>
+    <div class="success-sub">Suas respostas foram registradas com sucesso e farão parte da pesquisa de UX do Projeto Gral.ia. Juntos estamos construindo uma plataforma mais humana para a educação.</div>
+    <div class="success-badge">✓ Gravação confirmada</div>
+    <div class="receipt" id="receipt"></div>
+  </div>
+
+  <div class="footer">
+    Gral.ia · Pesquisa de UX · Projeto Integrador CEDUP<br>
+    Não solicitamos nome ou e-mail. Evite dados pessoais nas respostas.
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+// ── CONFIGURAÇÃO: mantenha a URL /exec da implantação atualizada ──
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxCPfwaxgM5jR2BK6eBh_GwMzjrWaltMPHWXgLLJ00OE7jt_bH-5JtmNhskO-ae4kGA/exec';
+const FORM_VERSION = '2.0';
+const REQUEST_TIMEOUT_MS = 25000;
+const form = document.getElementById('form');
+const ROLE_CARDS = { aluno: 'q7a', professor: 'q7b', direcao: 'q7c', bib: 'q7d' };
+let isSubmitting = false;
+let isSubmitted = false;
+// Fica somente nesta aba; nenhuma resposta é enviada a logs ou salva no navegador.
+// Após falha incerta, o mesmo objeto/ID é reenviado, sem gerar uma nova resposta.
+let pendingSubmission = null;
+
+function checkedValues(name) {
+  return Array.from(form.querySelectorAll(`input[name="${name}"]:checked`), input => input.value);
+}
+
+function selectedRole() {
+  return form.querySelector('input[name="q1"]:checked')?.value || '';
+}
+
+function syncConditions() {
+  const role = selectedRole();
+  Object.entries(ROLE_CARDS).forEach(([key, id]) => {
+    const card = document.getElementById(id);
+    const active = key === role;
+    card.classList.toggle('hidden', !active);
+    card.querySelector('textarea').disabled = !active || Boolean(pendingSubmission) || isSubmitted;
+  });
+  const other = checkedValues('q4').includes('outro');
+  document.getElementById('other4').classList.toggle('show', other);
+  form.elements.q4_outro.disabled = !other || Boolean(pendingSubmission) || isSubmitted;
+  const descriptions = {
+    aluno: 'Perguntas sobre sua experiência como estudante.',
+    professor: 'Perguntas sobre sua rotina docente e administrativa.',
+    direcao: 'Perguntas sobre gestão institucional e operacional.',
+    bib: 'Perguntas sobre o funcionamento da biblioteca e acervo.'
+  };
+  document.getElementById('sec3-desc').textContent = descriptions[role] || 'Conte sobre os maiores desafios na sua rotina.';
+}
+
+function syncStyles() {
+  form.querySelectorAll('.opt').forEach(label => {
+    label.classList.toggle('checked', label.querySelector('input').checked);
+  });
+  form.querySelectorAll('.scale-btn').forEach(button => {
+    const active = button.dataset.v === document.getElementById('q5_val').value;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+    button.setAttribute('aria-label', `Satisfação: ${button.dataset.v} de 5`);
+  });
+  form.querySelectorAll('textarea').forEach(area => {
+    const counter = area.closest('.q-card').querySelector('.cc span');
+    if (counter) counter.textContent = area.value.length;
+  });
+}
+
+function checks() {
+  const tools = checkedValues('q4');
+  const features = checkedValues('q9');
+  const platforms = checkedValues('q11');
+  return [
+    { id: 'q1', ok: Boolean(selectedRole()) },
+    { id: 'q2', ok: checkedValues('q2').length === 1 },
+    { id: 'q3', ok: checkedValues('q3').length === 1 },
+    { id: 'q4', ok: tools.length > 0 && (!tools.includes('outro') || Boolean(form.elements.q4_outro.value.trim())) },
+    { id: 'q5', ok: /^[1-5]$/.test(document.getElementById('q5_val').value) },
+    { id: 'q6', ok: Boolean(form.elements.q6.value.trim()) },
+    { id: 'q9', ok: features.length >= 1 && features.length <= 3 },
+    { id: 'q11', ok: !platforms.includes('nenhuma') || platforms.length === 1 }
+  ];
+}
+
+function markError(id, invalid) {
+  const card = document.getElementById(id);
+  card.classList.toggle('error', invalid);
+  card.querySelectorAll('input, textarea, button').forEach(input => {
+    if (input.type !== 'hidden') input.setAttribute('aria-invalid', String(invalid));
+  });
+}
+
+function updateProgress() {
+  const required = checks().filter(check => check.id !== 'q11');
+  const percentage = Math.round(required.filter(check => check.ok).length / required.length * 100);
+  document.getElementById('prog-fill').style.width = percentage + '%';
+  document.getElementById('prog-pct').textContent = percentage + '%';
+  document.getElementById('prog-track').setAttribute('aria-valuenow', percentage);
+  document.getElementById('prog-label').textContent = 'Perguntas obrigatórias respondidas';
+}
+
+function statusMessage(message, error = true) {
+  const status = document.getElementById('submitStatus');
+  status.textContent = message;
+  status.classList.toggle('status-error', error);
+  status.hidden = !message;
+}
+
+function validate() {
+  let valid = true;
+  checks().forEach(check => {
+    markError(check.id, !check.ok);
+    if (!check.ok) valid = false;
+  });
+  form.querySelectorAll('textarea:not(:disabled), input[type="text"]:not(:disabled)').forEach(input => {
+    if (input.value.length > 600) {
+      markError(input.closest('.q-card').id, true);
+      valid = false;
+    }
+  });
+  if (!valid) {
+    statusMessage('Revise as perguntas destacadas. Textos podem ter até 600 caracteres.');
+    const card = form.querySelector('.q-card.error');
+    card?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    card?.querySelector('input:not([type="hidden"]):not(:disabled), textarea:not(:disabled), button')?.focus({ preventScroll: true });
+  }
+  return valid;
+}
+
+// O DOM é a fonte dos dados. FormData é usado apenas para leitura local;
+// o corpo HTTP é JSON, não multipart/form-data.
+function collectAnswers() {
+  const data = new FormData(form);
+  const text = name => String(data.get(name) || '').trim();
+  const role = text('q1');
+  const tools = data.getAll('q4');
+  return {
+    perfil: role, nivel_ensino: text('q2'), frequencia: text('q3'),
+    ferramentas: tools, ferramentas_outro: tools.includes('outro') ? text('q4_outro') : '',
+    satisfacao: Number(text('q5')), frustracao_geral: text('q6'),
+    resp_aluno: role === 'aluno' ? text('q7a') : '',
+    resp_professor: role === 'professor' ? text('q7b') : '',
+    resp_direcao: role === 'direcao' ? text('q7c') : '',
+    resp_bib: role === 'bib' ? text('q7d') : '',
+    pontos_positivos: text('q8'), funcionalidades: data.getAll('q9'),
+    sugestao: text('q10'), plataformas: data.getAll('q11'), plataformas_outras: text('q11_outras')
+  };
+}
+
+function createResponseId() {
+  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  bytes[6] = (bytes[6] & 15) | 64;
+  bytes[8] = (bytes[8] & 63) | 128;
+  const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
+function validEndpoint(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' && url.hostname === 'script.google.com' &&
+      !url.port && !url.username && !url.password && !url.search && !url.hash &&
+      /^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(url.pathname);
+  } catch { return false; }
+}
+
+function syncSubmissionUI() {
+  const locked = Boolean(pendingSubmission) || isSubmitted;
+  form.querySelectorAll('input, textarea, button').forEach(input => { input.disabled = locked; });
+  syncConditions();
+  document.getElementById('btnSend').disabled = isSubmitting || isSubmitted;
+  document.getElementById('spin').style.display = isSubmitting ? 'block' : 'none';
+  document.getElementById('btnTxt').textContent = isSubmitting ? 'Enviando...' : pendingSubmission ? 'Tentar confirmar envio' : 'Enviar respostas';
+  form.setAttribute('aria-busy', String(isSubmitting));
+}
+
+async function submitForm() {
+  if (isSubmitting || isSubmitted) return;
+  if (!pendingSubmission && !validate()) return;
+  if (!validEndpoint(SHEETS_URL)) {
+    statusMessage('A pesquisa está temporariamente indisponível. Informe a equipe responsável.');
+    return;
+  }
+  if (navigator.onLine === false) {
+    statusMessage('Você está sem conexão. Reconecte-se e tente novamente. Mantenha esta aba aberta para preservar suas respostas.');
+    return;
+  }
+  if (!pendingSubmission) {
+    try {
+      pendingSubmission = {
+        form_version: FORM_VERSION, response_id: createResponseId(),
+        timestamp: new Date().toISOString(), ...collectAnswers()
+      };
+    } catch {
+      statusMessage('Seu navegador não conseguiu preparar o envio. Tente em um navegador atualizado.');
+      return;
+    }
+  }
+  isSubmitting = true;
+  syncSubmissionUI();
+  statusMessage('Enviando e aguardando confirmação. Mantenha esta aba aberta.', false);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    const response = await fetch(SHEETS_URL, {
+      method: 'POST', mode: 'cors', credentials: 'omit', redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(pendingSubmission), signal: controller.signal
+    });
+    if (!response.ok) throw new Error('HTTP_ERROR');
+    const result = await response.json();
+    if (!result || result.api_version !== FORM_VERSION) throw new Error('INVALID_RESPONSE');
+    if (result.status === 'error') {
+      const error = new Error('SERVER_ERROR');
+      error.code = result.code;
+      throw error;
+    }
+    if (result.status !== 'ok' || result.response_id !== pendingSubmission.response_id ||
+        typeof result.duplicate !== 'boolean' || typeof result.saved_at !== 'string' ||
+        !Number.isFinite(Date.parse(result.saved_at))) throw new Error('INVALID_RESPONSE');
+    showSuccess(result.response_id);
+  } catch (error) {
+    const rejectedBeforeWrite = ['INVALID_PAYLOAD', 'INVALID_JSON', 'UNSUPPORTED_VERSION', 'PAYLOAD_TOO_LARGE', 'UNSUPPORTED_MEDIA_TYPE'];
+    if (rejectedBeforeWrite.includes(error.code)) {
+      pendingSubmission = null;
+      statusMessage(error.code === 'UNSUPPORTED_VERSION'
+        ? 'A versão da pesquisa mudou. Copie suas respostas antes de atualizar a página.'
+        : 'O servidor recusou os dados. Revise suas respostas; se persistir, informe a equipe da pesquisa.');
+    } else {
+      const reasons = {
+        BUSY: 'O serviço está ocupado.',
+        SCHEMA_MISMATCH: 'A equipe da pesquisa precisa ajustar a planilha.',
+        ID_CONFLICT: 'O identificador de envio precisa ser verificado pela equipe.'
+      };
+      const reason = reasons[error.code] || (error.name === 'AbortError' ? 'O tempo de espera terminou.' : 'Não foi possível confirmar a gravação.');
+      statusMessage(`${reason} Mantenha esta aba aberta e use “Tentar confirmar envio”. Suas respostas ficam preservadas nesta aba; a nova tentativa usará o mesmo identificador para evitar duplicação.`);
+    }
+  } finally {
+    clearTimeout(timeout);
+    isSubmitting = false;
+    syncSubmissionUI();
+  }
+}
+
+function showSuccess(id) {
+  isSubmitted = true;
+  pendingSubmission = null;
+  form.style.display = 'none';
+  const success = document.getElementById('success');
+  success.style.display = 'block';
+  document.getElementById('receipt').textContent = 'Comprovante: ' + id;
+  success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  success.focus({ preventScroll: true });
+  document.getElementById('prog-fill').style.width = '100%';
+  document.getElementById('prog-pct').textContent = '100%';
+  document.getElementById('prog-track').setAttribute('aria-valuenow', '100');
+  document.getElementById('prog-label').textContent = 'Concluído!';
+}
+
+form.addEventListener('submit', event => { event.preventDefault(); submitForm(); });
+form.addEventListener('change', event => {
+  const input = event.target;
+  if (input.name === 'q9' && checkedValues('q9').length > 3) {
+    input.checked = false;
+    statusMessage('Escolha no máximo 3 funcionalidades. Desmarque uma antes de escolher outra.');
+  }
+  if (input.name === 'q11' && input.checked) {
+    form.querySelectorAll('input[name="q11"]').forEach(other => {
+      if (other !== input && (input.value === 'nenhuma' || other.value === 'nenhuma')) other.checked = false;
+    });
+  }
+  syncConditions();
+  syncStyles();
+  checks().forEach(check => { if (check.ok) markError(check.id, false); });
+  updateProgress();
+});
+form.addEventListener('input', () => {
+  syncStyles();
+  checks().forEach(check => { if (check.ok) markError(check.id, false); });
+  updateProgress();
+});
+document.getElementById('scale5').addEventListener('click', event => {
+  const button = event.target.closest('.scale-btn');
+  if (!button || button.disabled) return;
+  document.getElementById('q5_val').value = button.dataset.v;
+  markError('q5', false);
+  syncStyles();
+  updateProgress();
+});
+document.getElementById('btnClear').addEventListener('click', () => {
+  if (isSubmitting || pendingSubmission || isSubmitted || !confirm('Limpar todas as respostas?')) return;
+  form.reset();
+  document.getElementById('q5_val').value = '';
+  form.querySelectorAll('.q-card').forEach(card => markError(card.id, false));
+  statusMessage('');
+  syncConditions();
+  syncStyles();
+  updateProgress();
+});
+
+// Relaciona perguntas, controles e mensagens para tecnologias assistivas.
+form.querySelectorAll('.q-card').forEach(card => {
+  const label = card.querySelector('.q-label');
+  label.id = card.id + '_label';
+  card.setAttribute('role', 'group');
+  card.setAttribute('aria-labelledby', label.id);
+  const message = card.querySelector('.req-msg');
+  if (message) message.id = card.id + '_error';
+  card.querySelectorAll('textarea, input[type="text"], .scale-btn').forEach(input => {
+    if (!input.hasAttribute('aria-label')) input.setAttribute('aria-labelledby', label.id);
+  });
+  card.querySelectorAll('input:not([type="hidden"]), textarea, button').forEach(input => {
+    if (message) input.setAttribute('aria-describedby', message.id);
+  });
+});
+syncConditions();
+syncStyles();
+updateProgress();
+</script>
+</body>
+</html>
