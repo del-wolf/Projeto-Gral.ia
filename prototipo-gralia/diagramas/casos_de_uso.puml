@@ -1,0 +1,48 @@
+@startuml
+top to bottom direction
+skinparam monochrome true
+skinparam shadowing false
+actor Aluno
+actor Professor
+actor "Admin técnico" as Admin
+rectangle "Gral.ia protótipo" {
+  usecase "Entrar e sair" as Login
+  usecase "Consultar disciplinas e agenda" as Disciplinas
+  usecase "Consultar notas e frequência" as Boletim
+  usecase "Acessar materiais" as Material
+  usecase "Criar avaliações e lançar notas" as Notas
+  usecase "Registrar aulas e frequência" as Frequencia
+  usecase "Publicar links de materiais" as Publicar
+  usecase "Consultar disponibilidade" as Agenda
+  usecase "Reservar ambiente" as Reserva
+  usecase "Cancelar reserva autorizada" as Cancelar
+  usecase "Preparar cadastros e ofertas" as Cadastro
+  usecase "Matricular em ofertas" as Matricula
+  usecase "Validar lote de matrículas" as ValidarMatricula
+  usecase "Garantir intervalo sem conflito" as ValidarReserva
+}
+Aluno --> Login
+Professor --> Login
+Admin --> Login
+Aluno --> Disciplinas
+Aluno --> Boletim
+Aluno --> Material
+Aluno --> Agenda
+Professor --> Disciplinas
+Professor --> Notas
+Professor --> Frequencia
+Professor --> Publicar
+Professor --> Agenda
+Professor --> Reserva
+Professor --> Cancelar
+Admin --> Cadastro
+Admin --> Matricula
+Admin --> Agenda
+Admin --> Cancelar
+Matricula .> ValidarMatricula : <<include>>
+Reserva .> ValidarReserva : <<include>>
+note bottom of Login
+  Sessão válida é pré-condição das operações protegidas.
+  Seleção de perfil é somente simulação no modo demo.
+end note
+@enduml

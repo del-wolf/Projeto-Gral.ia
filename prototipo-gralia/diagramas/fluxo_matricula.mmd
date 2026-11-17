@@ -1,0 +1,18 @@
+flowchart TB
+    START["Admin abre Matrículas"] --> SEARCH["Buscar matrícula do aluno"]
+    SEARCH --> FOUND{"Aluno ativo encontrado?"}
+    FOUND -->|Não| EMPTY["Explicar ausência ou inatividade"]
+    EMPTY --> SEARCH
+    FOUND -->|Sim| SELECT["Selecionar ofertas"]
+    SELECT --> HAS{"Há oferta selecionada?"}
+    HAS -->|Não| HELP["Botão desabilitado e orientação"]
+    HELP --> SELECT
+    HAS -->|Sim| VALIDATE["Validar permissão e lote"]
+    VALIDATE --> OK{"Lote válido?"}
+    OK -->|Não| FAIL["Exibir erro e preservar dados"]
+    FAIL --> SELECT
+    OK -->|Sim| SAVE["Gravar lote em transação"]
+    SAVE --> SAVED{"Persistência confirmada?"}
+    SAVED -->|Não| FAIL
+    SAVED -->|Sim| DONE["Confirmar e limpar seleção"]
+    DONE --> READ["Recarregar e verificar vínculo"]

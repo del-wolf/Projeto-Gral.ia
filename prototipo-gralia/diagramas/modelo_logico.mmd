@@ -1,0 +1,19 @@
+erDiagram
+    direction TB
+    PROFILES o|--o| ALUNOS : identifica
+    PROFILES o|--o| PROFESSORES : identifica
+    PROFESSORES ||--o{ OFERTAS : leciona
+    TURMAS ||--o{ OFERTAS : organiza
+    PERIODOS ||--o{ OFERTAS : delimita
+    DISCIPLINAS ||--o{ OFERTAS : oferece
+    ALUNOS ||--o{ MATRICULAS : possui
+    OFERTAS ||--o{ MATRICULAS : recebe
+    OFERTAS ||--o{ AVALIACOES : define
+    OFERTAS ||--o{ AULAS : agenda
+    OFERTAS ||--o{ MATERIAIS : publica
+    MATRICULAS ||--o{ NOTAS : recebe
+    AVALIACOES ||--o{ NOTAS : avalia
+    MATRICULAS ||--o{ FREQUENCIAS : registra
+    AULAS ||--o{ FREQUENCIAS : verifica
+    SALAS ||--o{ RESERVAS : possui
+    PROFILES ||--o{ RESERVAS : solicita

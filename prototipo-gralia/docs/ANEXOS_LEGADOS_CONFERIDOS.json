@@ -1,0 +1,65 @@
+{
+  "nota": "Comparação binária de anexos antigos reenviados com inventário v4; não executa código nem herda testes. CSV não lido/importado.",
+  "anexos": [
+    {
+      "arquivo_anexo": "2026-10-15-reconstrucao-nexus.md.pdf",
+      "bytes": 74434,
+      "sha256": "7ce7a278373801c6dc8a0e98beb9b846bc02c57d1514c721225e0ab74b3eb1ac",
+      "coincide_inventario": "2026-10-15-reconstrucao-nexus.md.pdf"
+    },
+    {
+      "arquivo_anexo": "nexus_app.html",
+      "bytes": 68271,
+      "sha256": "c19ac836574daab4fcd1954aa8c7d79362f23f7d31e77fa7b2b7dda57a73bbc3",
+      "coincide_inventario": "nexus_app.html"
+    },
+    {
+      "arquivo_anexo": "Nexus_Especificacao_v3.docx",
+      "bytes": 161597,
+      "sha256": "ad3e8fc7620659549cdd71aac5bd8a6ba13afada41928ebd1351bd39f73b8d28",
+      "coincide_inventario": "Nexus_Especificacao_v3.docx"
+    },
+    {
+      "arquivo_anexo": "Sistema Nexus — Documento Mestre do Projeto.pdf",
+      "bytes": 408701,
+      "sha256": "ca18bb0eae31c66c5759c26a6b9c62c706d9ec2e10126757e5c9c68d2262a9f4",
+      "coincide_inventario": "Sistema Nexus — Documento Mestre do Projeto(2).pdf"
+    },
+    {
+      "arquivo_anexo": "nexus-system.zip",
+      "bytes": 298490,
+      "sha256": "2bb93d1c3e5f80d34ac3096617487a15dd0ed1a6320b70c3d78624d75c6e5de6",
+      "coincide_inventario": "nexus-system(1).zip"
+    },
+    {
+      "arquivo_anexo": "Sistema Nexus — Especificação Técnica.pdf",
+      "bytes": 152172,
+      "sha256": "7ae1ed2e3443d929dabd5d544e2797bc040b46f132ef673fbbfe5a08f16d019b",
+      "coincide_inventario": "Sistema Nexus — Especificação Técnica(2).pdf"
+    },
+    {
+      "arquivo_anexo": "nexus_app_v2.html",
+      "bytes": 86327,
+      "sha256": "42cfba888e6ac50a80571dc8aa434d4a2ca820fd3eec9ef5a3c28ec9317e713a",
+      "coincide_inventario": "nexus_app_v2.html"
+    },
+    {
+      "arquivo_anexo": "Gralia_Benchmarking_Aprofundado.docx",
+      "bytes": 164282,
+      "sha256": "c2e83673420b9599be5b147ed2ac1cdcad0366709d2b814957682b9574b78ebe",
+      "coincide_inventario": "Gralia_Benchmarking_Aprofundado.docx"
+    },
+    {
+      "arquivo_anexo": "nexus_corrigido.html",
+      "bytes": 16436,
+      "sha256": "51cca7867721e44cdfeb0bd73ece018a32c1f0ef9f87165eb3b1ff86d05abd6f",
+      "coincide_inventario": "nexus_corrigido.html"
+    },
+    {
+      "arquivo_anexo": "Gralia_Dossie_Mestre.docx",
+      "bytes": 185951,
+      "sha256": "a16f053f6021e59587475cdb2293109ec7d5ebdff119ecd8d824960525578cb6",
+      "coincide_inventario": "Gralia_Dossie_Mestre.docx"
+    }
+  ]
+}

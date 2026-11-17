@@ -1,0 +1,64 @@
+name: Verificar Gralia
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '24.22.1'
+          cache: npm
+      - name: Instalar versões do lockfile
+        run: npm ci
+      - name: Conferir tipos
+        run: npm run typecheck
+      - name: Conferir lint
+        run: npm run lint
+      - name: Executar testes unitários
+        run: npm run test:unit
+      - name: Construir demo
+        run: npm run build:demo
+      - name: Construir integração sem credenciais embutidas
+        run: npm run build:supabase
+      - name: Executar Cypress demo
+        run: npm run test:e2e:demo
+      - name: Guardar relatórios e screenshots reais
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: gralia-evidencias-web
+          path: docs/evidencias/
+          if-no-files-found: warn
+
+  postgres:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      CYPRESS_INSTALL_BINARY: '0'
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: '24.22.1'
+          cache: npm
+      - name: Instalar versões do lockfile
+        run: npm ci
+      - name: Testar SQL, RLS e concorrência em contêiner próprio descartável
+        run: npm run test:db
+      - name: Guardar resultados PostgreSQL
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: gralia-evidencias-postgres
+          path: docs/evidencias/db-*/
+          if-no-files-found: warn

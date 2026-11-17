@@ -1,0 +1,9 @@
+flowchart TB
+    UI["React e TypeScript"] --> SVC["Domínio e serviços"]
+    SVC --> DEMO["Adaptador demo"]
+    SVC --> REAL["Adaptador Supabase"]
+    DEMO --> LOCAL["Dados fictícios locais"]
+    REAL --> AUTH["Supabase Auth"]
+    REAL --> DB["PostgreSQL com RLS e constraints"]
+    CYP["Cypress"] --> UI
+    SQL["Testes de banco e concorrência"] --> DB

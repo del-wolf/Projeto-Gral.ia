@@ -1,0 +1,317 @@
+{
+  "fixture_version": "1.0",
+  "purpose": "Contrato sintético para implementação. Não é seed SQL executado.",
+  "time_zone": "America/Sao_Paulo",
+  "demo_test_clock": "2026-11-16T12:00:00Z",
+  "auth_provisioning": "Mapear aliases aos IDs criados pelo Supabase; não contém senhas ou contas remotas.",
+  "profiles": [
+    {
+      "id": "af1a69f7-d8ab-5845-bc0e-e572606a4436",
+      "alias": "ADMIN-QA",
+      "nome": "Admin Demonstração",
+      "papel": "admin",
+      "email_fixture": "admin@example.test"
+    },
+    {
+      "id": "8ab541b4-1228-5e0a-be94-3cefeae65b3d",
+      "alias": "ALUNO-A",
+      "nome": "Aluno Teste A",
+      "papel": "aluno",
+      "email_fixture": "aluno.a@example.test"
+    },
+    {
+      "id": "49cc3905-d6c5-58bf-bbd3-481ba465107a",
+      "alias": "ALUNO-B",
+      "nome": "Aluno Teste B",
+      "papel": "aluno",
+      "email_fixture": "aluno.b@example.test"
+    },
+    {
+      "id": "2d15278c-a3b7-511f-ba5d-fbe21f35023f",
+      "alias": "PROF-A",
+      "nome": "Professor Teste A",
+      "papel": "professor",
+      "email_fixture": "prof.a@example.test"
+    },
+    {
+      "id": "bdb21924-bb32-573d-8cce-1c10e3d409c4",
+      "alias": "PROF-B",
+      "nome": "Professor Teste B",
+      "papel": "professor",
+      "email_fixture": "prof.b@example.test"
+    }
+  ],
+  "alunos": [
+    {
+      "id": "2c24bc89-b6aa-5249-8651-20573bb53558",
+      "alias": "ALUNO-A",
+      "profile_id": "8ab541b4-1228-5e0a-be94-3cefeae65b3d",
+      "nome": "Aluno Teste A",
+      "matricula": "QA2026001",
+      "status": "ativo"
+    },
+    {
+      "id": "19c65e01-b0a3-5f98-8758-80e3d097a8ed",
+      "alias": "ALUNO-B",
+      "profile_id": "49cc3905-d6c5-58bf-bbd3-481ba465107a",
+      "nome": "Aluno Teste B",
+      "matricula": "QA2026002",
+      "status": "ativo"
+    },
+    {
+      "id": "04f435cc-9cd1-5539-985d-ace948bd0a10",
+      "alias": "ALUNO-C",
+      "profile_id": null,
+      "nome": "Aluno Teste C",
+      "matricula": "QA2026003",
+      "status": "ativo"
+    }
+  ],
+  "professores": [
+    {
+      "id": "764c4a87-4b91-578a-a599-dc637088e75e",
+      "alias": "PROF-A",
+      "profile_id": "2d15278c-a3b7-511f-ba5d-fbe21f35023f",
+      "nome": "Professor Teste A",
+      "status": "ativo"
+    },
+    {
+      "id": "bd17d7ce-b2bc-52d8-adaf-3bb3aab7d67a",
+      "alias": "PROF-B",
+      "profile_id": "bdb21924-bb32-573d-8cce-1c10e3d409c4",
+      "nome": "Professor Teste B",
+      "status": "ativo"
+    }
+  ],
+  "periodos": [
+    {
+      "id": "7c3eec77-dcbb-59a8-94da-9f61eb85087c",
+      "codigo": "2026-2",
+      "inicio": "2026-07-01",
+      "fim": "2026-12-31"
+    }
+  ],
+  "turmas": [
+    {
+      "id": "f0025cee-839f-5378-8cb2-be492fce85d1",
+      "codigo": "TDS-3A",
+      "nome": "TDS-3A"
+    },
+    {
+      "id": "b8efba12-6955-534e-85a5-3ba3d0edd025",
+      "codigo": "TDS-3B",
+      "nome": "TDS-3B"
+    }
+  ],
+  "disciplinas": [
+    {
+      "id": "e2ff7dd0-a485-5ece-b332-0737b2315da9",
+      "codigo": "PWEB",
+      "nome": "Programação Web",
+      "carga_horaria": 40
+    },
+    {
+      "id": "096df91b-aa70-581f-88bb-1cea264c0fb8",
+      "codigo": "TEST",
+      "nome": "Qualidade e Teste de Software",
+      "carga_horaria": 40
+    },
+    {
+      "id": "9fd02087-db6e-57df-a462-9cc594acf184",
+      "codigo": "BD",
+      "nome": "Banco de Dados",
+      "carga_horaria": 40
+    },
+    {
+      "id": "166ec516-a027-5c25-9da2-1120e0816a8d",
+      "codigo": "REDES",
+      "nome": "Redes de Computadores",
+      "carga_horaria": 40
+    }
+  ],
+  "ofertas_disciplina": [
+    {
+      "id": "241f310d-ac6a-526a-9005-f738ba262360",
+      "codigo": "OF-PWEB-3A",
+      "disciplina_id": "e2ff7dd0-a485-5ece-b332-0737b2315da9",
+      "turma_id": "f0025cee-839f-5378-8cb2-be492fce85d1",
+      "periodo_id": "7c3eec77-dcbb-59a8-94da-9f61eb85087c",
+      "professor_id": "764c4a87-4b91-578a-a599-dc637088e75e",
+      "plano_ensino": "Plano demonstrativo de Programação Web",
+      "referencias": "Referências de estudo sintéticas para demonstração."
+    },
+    {
+      "id": "675ec162-848f-5668-8433-21a9e00890e6",
+      "codigo": "OF-TEST-3A",
+      "disciplina_id": "096df91b-aa70-581f-88bb-1cea264c0fb8",
+      "turma_id": "f0025cee-839f-5378-8cb2-be492fce85d1",
+      "periodo_id": "7c3eec77-dcbb-59a8-94da-9f61eb85087c",
+      "professor_id": "764c4a87-4b91-578a-a599-dc637088e75e",
+      "plano_ensino": "Plano demonstrativo de Qualidade e Teste de Software",
+      "referencias": "Referências de estudo sintéticas para demonstração."
+    },
+    {
+      "id": "6598b61a-1a68-574a-9210-40d79f7b9c9d",
+      "codigo": "OF-BD-3B",
+      "disciplina_id": "9fd02087-db6e-57df-a462-9cc594acf184",
+      "turma_id": "b8efba12-6955-534e-85a5-3ba3d0edd025",
+      "periodo_id": "7c3eec77-dcbb-59a8-94da-9f61eb85087c",
+      "professor_id": "bd17d7ce-b2bc-52d8-adaf-3bb3aab7d67a",
+      "plano_ensino": "Plano demonstrativo de Banco de Dados",
+      "referencias": "Referências de estudo sintéticas para demonstração."
+    },
+    {
+      "id": "aea44b3f-84ee-50c5-8d36-5057422b033b",
+      "codigo": "OF-REDES-3A",
+      "disciplina_id": "166ec516-a027-5c25-9da2-1120e0816a8d",
+      "turma_id": "f0025cee-839f-5378-8cb2-be492fce85d1",
+      "periodo_id": "7c3eec77-dcbb-59a8-94da-9f61eb85087c",
+      "professor_id": "764c4a87-4b91-578a-a599-dc637088e75e",
+      "plano_ensino": "Plano demonstrativo de Redes de Computadores",
+      "referencias": "Referências de estudo sintéticas para demonstração."
+    }
+  ],
+  "matriculas": [
+    {
+      "id": "66d6df44-0ec9-555b-ae32-e4b3860d4f61",
+      "aluno_id": "2c24bc89-b6aa-5249-8651-20573bb53558",
+      "oferta_id": "241f310d-ac6a-526a-9005-f738ba262360",
+      "status": "ativa"
+    },
+    {
+      "id": "e0163493-ef16-5dea-9497-661406efe290",
+      "aluno_id": "19c65e01-b0a3-5f98-8758-80e3d097a8ed",
+      "oferta_id": "6598b61a-1a68-574a-9210-40d79f7b9c9d",
+      "status": "ativa"
+    }
+  ],
+  "avaliacoes": [
+    {
+      "id": "5135be74-e53b-5d94-84bd-f6bb48b8e96f",
+      "oferta_id": "241f310d-ac6a-526a-9005-f738ba262360",
+      "titulo": "A1-PWEB",
+      "peso": 2
+    },
+    {
+      "id": "a133efc4-aa65-50cf-ab4a-b0b64cfd80c6",
+      "oferta_id": "241f310d-ac6a-526a-9005-f738ba262360",
+      "titulo": "A2-PWEB",
+      "peso": 1
+    },
+    {
+      "id": "b861b53c-6175-5510-8976-da1eb017004d",
+      "oferta_id": "241f310d-ac6a-526a-9005-f738ba262360",
+      "titulo": "A3-PWEB",
+      "peso": 1
+    },
+    {
+      "id": "aea4ba82-ee80-5794-ab97-c1f21ed7e7a9",
+      "oferta_id": "6598b61a-1a68-574a-9210-40d79f7b9c9d",
+      "titulo": "A1-BD",
+      "peso": 1
+    }
+  ],
+  "notas": [
+    {
+      "id": "108b4f62-5f72-5f79-8c16-a562213b748e",
+      "avaliacao_id": "5135be74-e53b-5d94-84bd-f6bb48b8e96f",
+      "matricula_id": "66d6df44-0ec9-555b-ae32-e4b3860d4f61",
+      "oferta_id": "241f310d-ac6a-526a-9005-f738ba262360",
+      "valor": 8
+    },
+    {
+      "id": "61dccbfd-d992-5ff5-9d8c-b2f9e88e5e60",
+      "avaliacao_id": "a133efc4-aa65-50cf-ab4a-b0b64cfd80c6",
+      "matricula_id": "66d6df44-0ec9-555b-ae32-e4b3860d4f61",
+      "oferta_id": "241f310d-ac6a-526a-9005-f738ba262360",
+      "valor": 6
+    },
+    {
+      "id": "062b4276-e58a-55dd-aa1d-8fffaacc8a95",
+      "avaliacao_id": "aea4ba82-ee80-5794-ab97-c1f21ed7e7a9",
+      "matricula_id": "e0163493-ef16-5dea-9497-661406efe290",
+      "oferta_id": "6598b61a-1a68-574a-9210-40d79f7b9c9d",
+      "valor": 9
+    }
+  ],
+  "aulas": [
+    {
+      "id": "28381a7e-5ae4-58a3-bacf-218293dc0bb6",
+      "oferta_id": "241f310d-ac6a-526a-9005-f738ba262360",
+      "data": "2026-11-10",
+      "titulo": "Aula demonstrativa 1"
+    },
+    {
+      "id": "f3a304b9-7e67-5981-8426-5cfd7d1125aa",
+      "oferta_id": "241f310d-ac6a-526a-9005-f738ba262360",
+      "data": "2026-11-11",
+      "titulo": "Aula demonstrativa 2"
+    },
+    {
+      "id": "a9f97c79-dea4-57f9-af94-bd299583ce9b",
+      "oferta_id": "241f310d-ac6a-526a-9005-f738ba262360",
+      "data": "2026-11-12",
+      "titulo": "Aula demonstrativa 3"
+    }
+  ],
+  "frequencias": [
+    {
+      "id": "d9c7f7c9-063c-529d-9517-a6fca0881762",
+      "aula_id": "28381a7e-5ae4-58a3-bacf-218293dc0bb6",
+      "matricula_id": "66d6df44-0ec9-555b-ae32-e4b3860d4f61",
+      "oferta_id": "241f310d-ac6a-526a-9005-f738ba262360",
+      "status": "presente"
+    },
+    {
+      "id": "2c73c695-4e3b-5e83-a349-e408e5778583",
+      "aula_id": "f3a304b9-7e67-5981-8426-5cfd7d1125aa",
+      "matricula_id": "66d6df44-0ec9-555b-ae32-e4b3860d4f61",
+      "oferta_id": "241f310d-ac6a-526a-9005-f738ba262360",
+      "status": "falta"
+    }
+  ],
+  "materiais": [],
+  "salas": [
+    {
+      "id": "7d1bcef3-196e-5601-aeac-4af394998eb8",
+      "codigo": "LAB-01",
+      "nome": "Laboratório 01",
+      "ativa": true
+    },
+    {
+      "id": "7ab69f59-49ce-5cd2-acaf-f00a20f88ecb",
+      "codigo": "LAB-02",
+      "nome": "Laboratório 02",
+      "ativa": true
+    },
+    {
+      "id": "d7ab7681-94fa-5e5f-86fd-c6af5d128f5e",
+      "codigo": "SALA-INATIVA",
+      "nome": "Sala inativa de teste",
+      "ativa": false
+    }
+  ],
+  "reservas_templates": [
+    {
+      "alias": "RESERVA-BASE",
+      "sala_id": "7d1bcef3-196e-5601-aeac-4af394998eb8",
+      "solicitante_profile_id": "2d15278c-a3b7-511f-ba5d-fbe21f35023f",
+      "offset_dias": 2,
+      "inicio_local": "14:00",
+      "fim_local": "15:00",
+      "status": "ativa",
+      "motivo": "Aula demonstrativa"
+    }
+  ],
+  "expected_baseline": {
+    "target_case_offer": "OF-TEST-3A",
+    "target_case_student": "QA2026001",
+    "target_pair_count": 0,
+    "media_parcial_pweb": 7.33,
+    "pendencias_notas_pweb": 1,
+    "presencas": 1,
+    "faltas": 1,
+    "pendencias_frequencia": 1,
+    "frequencia_parcial": 50
+  }
+}
